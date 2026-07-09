@@ -1,4 +1,4 @@
-# digital_khata
+# BMI Calculator
 
 A new Flutter project.
 
