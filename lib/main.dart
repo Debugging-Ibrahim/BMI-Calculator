@@ -1,8 +1,23 @@
-import 'package:digital_khata/calculator.dart';
+import 'package:digital_khata/bmi_provider.dart';
+import 'package:digital_khata/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+
+  final bmiProvider = BMIProvider();
+  await bmiProvider.initHive();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => bmiProvider,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -10,9 +25,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: CalculatorScreen(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: HomeScreen());
   }
 }
