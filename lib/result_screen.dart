@@ -1,5 +1,4 @@
 import 'package:digital_khata/bmi_provider.dart';
-import 'package:digital_khata/calculator.dart';
 import 'package:digital_khata/widgets/reusable_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
