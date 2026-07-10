@@ -1,31 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 class ReUsableButton extends StatelessWidget {
-  const ReUsableButton({super.key, required this.text, required this.icon});
+  const ReUsableButton({
+    super.key,
+    required this.text,
+    required this.icon,
+    required this.onTap,
+  });
 
   final String text;
   final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      width: 250,
-      decoration: BoxDecoration(
-        color: Colors.deepPurple.shade400,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Row(
-        mainAxisAlignment: .spaceEvenly,
-        children: [
-          Icon(icon, color: Colors.white),
-          Center(
-            child: Text(
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: 70,
+        width: 375,
+        decoration: BoxDecoration(
+          color: const Color(0xffdafd87),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
               text,
-              style: TextStyle(fontSize: 18, color: Colors.white),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Icon(icon, color: Colors.black),
+          ],
+        ),
       ),
     );
   }

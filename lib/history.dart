@@ -1,5 +1,7 @@
 import 'package:digital_khata/bmi_provider.dart';
+import 'package:digital_khata/widgets/history_card.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -8,10 +10,20 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xff151615),
       appBar: AppBar(
-        backgroundColor: Colors.amber,
-        title: const Text("BMI History", style: TextStyle(color: Colors.black)),
-        centerTitle: true,
+        backgroundColor: const Color(0xff151615),
+        elevation: 0,
+        leading: const Icon(
+          Icons.hourglass_bottom_rounded,
+          color: Color(0xffdafd87),
+        ),
+        actionsPadding: const EdgeInsets.only(right: 15),
+        actions: const [Icon(Iconsax.setting_2, color: Colors.white, size: 20)],
+        title: const Text(
+          "History",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
       body: Consumer<BMIProvider>(
         builder: (context, provider, child) {
@@ -21,7 +33,7 @@ class HistoryScreen extends StatelessWidget {
             return const Center(
               child: Text(
                 "No past calculations found.",
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(fontSize: 18, color: Colors.white60),
               ),
             );
           }
@@ -45,30 +57,12 @@ class HistoryScreen extends StatelessWidget {
                     "${date.day}/${date.month}/${date.year} at ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
               }
 
-              return Card(
-                elevation: 2,
-                margin: const EdgeInsets.only(bottom: 10),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.amber.shade200,
-                    child: Text(
-                      bmi.toStringAsFixed(1),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    category,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    "Height: ${height}cm | Weight: ${weight}kg\nCalculated on: $formattedDate",
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  isThreeLine: true,
-                ),
+              return HistoryCard(
+                bmi: bmi,
+                category: category,
+                height: height,
+                weight: weight,
+                formattedDate: formattedDate,
               );
             },
           );
