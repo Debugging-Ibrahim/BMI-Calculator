@@ -1,7 +1,9 @@
+import 'package:digital_khata/auth/login_screen.dart';
 import 'package:digital_khata/bmi_provider.dart';
 import 'package:digital_khata/widgets/bmi_result_card.dart';
 import 'package:digital_khata/widgets/recommendation_item.dart';
 import 'package:digital_khata/widgets/reusable_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -106,8 +108,20 @@ class ResultScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         actionsPadding: const EdgeInsets.only(right: 15),
-        actions: const [
-          Icon(Icons.settings, color: Colors.white, size: 20),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+          ),
         ],
         title: const Text(
           "BMI Calculator",
@@ -155,7 +169,7 @@ class ResultScreen extends StatelessWidget {
                     color: Colors.white60,
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 15), 
 
                 ...recommendations.map((rec) => RecommendationItem(
                       header: rec['header']!,

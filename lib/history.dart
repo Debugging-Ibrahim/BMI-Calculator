@@ -1,5 +1,7 @@
+import 'package:digital_khata/auth/login_screen.dart';
 import 'package:digital_khata/bmi_provider.dart';
 import 'package:digital_khata/widgets/history_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +21,21 @@ class HistoryScreen extends StatelessWidget {
           color: Color(0xffdafd87),
         ),
         actionsPadding: const EdgeInsets.only(right: 15),
-        actions: const [Icon(Iconsax.setting_2, color: Colors.white, size: 20)],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+          ),
+        ],
         title: const Text(
           "History",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

@@ -1,8 +1,10 @@
+import 'package:digital_khata/auth/login_screen.dart';
 import 'package:digital_khata/bmi_provider.dart';
 import 'package:digital_khata/result_screen.dart';
 import 'package:digital_khata/widgets/reusable_button.dart';
 import 'package:digital_khata/widgets/selection_container.dart';
 import 'package:digital_khata/widgets/weight_age_container.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -70,7 +72,21 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           color: Color(0xffdafd87),
         ),
         actionsPadding: const EdgeInsets.only(right: 15),
-        actions: const [Icon(Iconsax.setting_2, color: Colors.white, size: 20)],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+          ),
+        ],
         title: const Text(
           "BMI Calculator",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

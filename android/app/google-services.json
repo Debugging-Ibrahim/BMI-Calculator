@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "695630192491",
+    "project_id": "bmicalculator-80265",
+    "storage_bucket": "bmicalculator-80265.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695630192491:android:4941c5ba3427da302e362e",
+        "android_client_info": {
+          "package_name": "com.example.digital_khata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJbNQvgknel7FVkTa9fsaklO37P4SJtsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
