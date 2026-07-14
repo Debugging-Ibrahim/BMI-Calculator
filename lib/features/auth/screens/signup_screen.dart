@@ -1,5 +1,7 @@
-import 'package:digital_khata/auth/login_screen.dart';
-import 'package:digital_khata/home_screen.dart';
+import 'package:digital_khata/features/auth/screens/login_screen.dart';
+import 'package:digital_khata/features/auth/widgets/auth_button.dart';
+import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
+import 'package:digital_khata/core/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -157,7 +159,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Column(
                   children: [
                     // Full Name
-                    _AuthTextField(
+                    AuthTextField(
                       controller: _nameController,
                       label: "Full Name",
                       hint: "John Doe",
@@ -175,7 +177,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 16),
 
                     // Email
-                    _AuthTextField(
+                    AuthTextField(
                       controller: _emailController,
                       label: "Email",
                       hint: "you@example.com",
@@ -195,7 +197,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 16),
 
                     // Password
-                    _AuthTextField(
+                    AuthTextField(
                       controller: _passwordController,
                       label: "Password",
                       hint: "••••••••",
@@ -230,7 +232,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       children: [
                         // Age
                         Expanded(
-                          child: _AuthTextField(
+                          child: AuthTextField(
                             controller: _ageController,
                             label: "Age",
                             hint: "25",
@@ -310,7 +312,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 35),
 
                     // Sign Up Button
-                    _AuthButton(
+                    AuthButton(
                       text: "Create Account",
                       onTap: _signup,
                       isLoading: _isLoading,
@@ -354,135 +356,6 @@ class _SignupScreenState extends State<SignupScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-// ─── Shared Widgets ───────────────────────────────────────────────────────────
-
-class _AuthTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final String hint;
-  final IconData icon;
-  final bool obscureText;
-  final Widget? suffixIcon;
-  final TextInputType? keyboardType;
-  final String? Function(String?)? validator;
-
-  const _AuthTextField({
-    required this.controller,
-    required this.label,
-    required this.hint,
-    required this.icon,
-    this.obscureText = false,
-    this.suffixIcon,
-    this.keyboardType,
-    this.validator,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
-          validator: validator,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: const TextStyle(color: Colors.white24, fontSize: 14),
-            prefixIcon: Icon(icon, color: Colors.white38, size: 20),
-            suffixIcon: suffixIcon,
-            filled: true,
-            fillColor: Colors.grey.shade900,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xffdafd87),
-                width: 1.5,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: Colors.redAccent, width: 1.5),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: Colors.redAccent, width: 1.5),
-            ),
-            errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AuthButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onTap;
-  final bool isLoading;
-
-  const _AuthButton({
-    required this.text,
-    required this.onTap,
-    this.isLoading = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xffdafd87),
-          foregroundColor: Colors.black,
-          disabledBackgroundColor: const Color(0xffdafd87).withOpacity(0.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-        ),
-        child: isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                ),
-              )
-            : Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
       ),
     );
   }

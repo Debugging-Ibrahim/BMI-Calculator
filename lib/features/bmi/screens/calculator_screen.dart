@@ -1,9 +1,9 @@
-import 'package:digital_khata/auth/login_screen.dart';
-import 'package:digital_khata/bmi_provider.dart';
-import 'package:digital_khata/result_screen.dart';
-import 'package:digital_khata/widgets/reusable_button.dart';
-import 'package:digital_khata/widgets/selection_container.dart';
-import 'package:digital_khata/widgets/weight_age_container.dart';
+import 'package:digital_khata/features/auth/screens/login_screen.dart';
+import 'package:digital_khata/features/bmi/providers/bmi_provider.dart';
+import 'package:digital_khata/features/bmi/screens/result_screen.dart';
+import 'package:digital_khata/core/widgets/reusable_button.dart';
+import 'package:digital_khata/features/bmi/widgets/selection_container.dart';
+import 'package:digital_khata/features/bmi/widgets/weight_age_container.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -52,6 +52,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     context.read<BMIProvider>().calculateAndSave(
       heightInCm.toStringAsFixed(1),
       _weight.toString(),
+      _age,
+      _selectedGender,
     );
 
     Navigator.push(

@@ -1,5 +1,5 @@
-import 'package:digital_khata/calculator.dart';
-import 'package:digital_khata/history.dart';
+import 'package:digital_khata/features/bmi/screens/calculator_screen.dart';
+import 'package:digital_khata/features/history/screens/history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 

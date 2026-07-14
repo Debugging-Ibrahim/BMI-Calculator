@@ -1,4 +1,4 @@
-import 'package:digital_khata/widgets/bmi_gauge_indicator.dart';
+import 'package:digital_khata/features/bmi/widgets/bmi_gauge_indicator.dart';
 import 'package:flutter/material.dart';
 
 class BmiResultCard extends StatelessWidget {

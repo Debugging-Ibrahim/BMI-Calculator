@@ -1,9 +1,8 @@
-import 'package:digital_khata/auth/login_screen.dart';
-import 'package:digital_khata/bmi_provider.dart';
-import 'package:digital_khata/widgets/history_card.dart';
+import 'package:digital_khata/features/auth/screens/login_screen.dart';
+import 'package:digital_khata/features/bmi/providers/bmi_provider.dart';
+import 'package:digital_khata/features/history/widgets/history_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
 class HistoryScreen extends StatelessWidget {

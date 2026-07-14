@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:digital_khata/auth/login_screen.dart';
-import 'package:digital_khata/home_screen.dart';
+import 'package:digital_khata/features/auth/screens/login_screen.dart';
+import 'package:digital_khata/core/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
