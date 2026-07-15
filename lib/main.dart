@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:digital_khata/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -16,10 +15,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await Hive.initFlutter();
-
   final bmiProvider = BMIProvider();
-  await bmiProvider.initHive();
 
   runApp(
     ChangeNotifierProvider(

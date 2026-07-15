@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
+import 'package:digital_khata/features/auth/widgets/auth_header.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/core/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,6 +45,18 @@ class _SignupScreenState extends State<SignupScreen> {
 
         // Update the display name with the full name entered
         await userCredential.user?.updateDisplayName(_nameController.text.trim());
+
+        // Save profile to Cloud Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'name': _nameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'gender': _selectedGender,
+          'age': int.tryParse(_ageController.text.trim()) ?? 0,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
 
         if (mounted) {
           Navigator.pushAndRemoveUntil(
@@ -97,59 +111,10 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 30),
-
-              // Back button + Logo
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade900,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffdafd87),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.hourglass_bottom_rounded,
-                      color: Colors.black,
-                      size: 22,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 35),
-
-              const Text(
-                "Create Account",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Fill in the details below to get started",
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 14,
-                ),
+              const AuthHeader(
+                title: "Create Account",
+                subtitle: "Fill in the details below to get started",
+                showBackButton: true,
               ),
 
               const SizedBox(height: 35),

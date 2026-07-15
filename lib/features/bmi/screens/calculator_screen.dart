@@ -2,7 +2,8 @@ import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/features/bmi/providers/bmi_provider.dart';
 import 'package:digital_khata/features/bmi/screens/result_screen.dart';
 import 'package:digital_khata/core/widgets/reusable_button.dart';
-import 'package:digital_khata/features/bmi/widgets/selection_container.dart';
+import 'package:digital_khata/features/bmi/widgets/gender_selection_card.dart';
+import 'package:digital_khata/features/bmi/widgets/height_selection_card.dart';
 import 'package:digital_khata/features/bmi/widgets/weight_age_container.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -99,214 +100,54 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
           child: Column(
             children: [
+              // Gender Selection Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedGender = 'Male';
-                      });
-                    },
-                    child: Container(
-                      height: 200,
-                      width: 175,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: _selectedGender == 'Male'
-                            ? const Color(0xff262826)
-                            : Colors.grey.shade900,
-                        border: _selectedGender == 'Male'
-                            ? Border.all(
-                                color: const Color(0xffdafd87),
-                                width: 1.5,
-                              )
-                            : Border.all(color: Colors.transparent),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Iconsax.man,
-                            color: _selectedGender == 'Male'
-                                ? const Color(0xffdafd87)
-                                : Colors.white60,
-                            size: 35,
-                          ),
-                          const SizedBox(height: 30),
-                          Text(
-                            "MALE",
-                            style: TextStyle(
-                              color: _selectedGender == 'Male'
-                                  ? Colors.white
-                                  : Colors.white60,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  GenderSelectionCard(
+                    gender: 'Male',
+                    isSelected: _selectedGender == 'Male',
+                    icon: Iconsax.man,
+                    onTap: () => setState(() => _selectedGender = 'Male'),
                   ),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedGender = 'Female';
-                      });
-                    },
-                    child: Container(
-                      height: 200,
-                      width: 175,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: _selectedGender == 'Female'
-                            ? const Color(0xff262826)
-                            : Colors.grey.shade900,
-                        border: _selectedGender == 'Female'
-                            ? Border.all(
-                                color: const Color(0xffdafd87),
-                                width: 1.5,
-                              )
-                            : Border.all(color: Colors.transparent),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Iconsax.woman,
-                            color: _selectedGender == 'Female'
-                                ? const Color(0xffdafd87)
-                                : Colors.white60,
-                            size: 35,
-                          ),
-                          const SizedBox(height: 30),
-                          Text(
-                            "FEMALE",
-                            style: TextStyle(
-                              color: _selectedGender == 'Female'
-                                  ? Colors.white
-                                  : Colors.white60,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  GenderSelectionCard(
+                    gender: 'Female',
+                    isSelected: _selectedGender == 'Female',
+                    icon: Iconsax.woman,
+                    onTap: () => setState(() => _selectedGender = 'Female'),
                   ),
                 ],
               ),
               const SizedBox(height: 15),
 
-              Container(
-                height: 200,
-                width: 375,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey.shade900,
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Height",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              RoundedUnitSelectionContainer(
-                                selected: _selectedUnit == 'In',
-                                text: 'In',
-                                onTap: () {
-                                  setState(() {
-                                    _selectedUnit = 'In';
-                                    _currentvalue = 75;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 8),
-                              RoundedUnitSelectionContainer(
-                                selected: _selectedUnit == 'Ft',
-                                text: 'Ft',
-                                onTap: () {
-                                  setState(() {
-                                    _selectedUnit = 'Ft';
-                                    _currentvalue = 6.2;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 8),
-                              RoundedUnitSelectionContainer(
-                                selected: _selectedUnit == 'Cm',
-                                text: 'Cm',
-                                onTap: () {
-                                  setState(() {
-                                    _selectedUnit = 'Cm';
-                                    _currentvalue = 191;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _selectedUnit == 'Ft'
-                              ? _currentvalue.toStringAsFixed(1)
-                              : _currentvalue.round().toString(),
-                          style: const TextStyle(
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            trackHeight: 2,
-                            thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 8,
-                            ),
-                            overlayShape: const RoundSliderOverlayShape(
-                              overlayRadius: 16,
-                            ),
-                          ),
-                          child: Slider(
-                            value: _currentvalue,
-                            min: _minHeight,
-                            max: _maxHeight,
-                            divisions: _divisions,
-                            activeColor: Colors.white70,
-                            inactiveColor: Colors.grey.shade800,
-                            thumbColor: const Color(0xffdafd87),
-                            onChanged: (double newVal) {
-                              setState(() {
-                                _currentvalue = newVal;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              // Height Slider Selection Card
+              HeightSelectionCard(
+                selectedUnit: _selectedUnit,
+                currentValue: _currentvalue,
+                minHeight: _minHeight,
+                maxHeight: _maxHeight,
+                divisions: _divisions,
+                onUnitChanged: (unit) {
+                  setState(() {
+                    _selectedUnit = unit;
+                    if (unit == 'In') {
+                      _currentvalue = 75;
+                    } else if (unit == 'Ft') {
+                      _currentvalue = 6.2;
+                    } else {
+                      _currentvalue = 191;
+                    }
+                  });
+                },
+                onHeightChanged: (newVal) {
+                  setState(() {
+                    _currentvalue = newVal;
+                  });
+                },
               ),
               const SizedBox(height: 15),
 
+              // Weight and Age Cards
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

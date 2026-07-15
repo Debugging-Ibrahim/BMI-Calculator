@@ -1,11 +1,10 @@
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class BMIProvider extends ChangeNotifier {
-  late Box _bmiBox;
-
   List<Map<dynamic, dynamic>> _history = [];
-
   List<Map<dynamic, dynamic>> get history => _history;
 
   double? _bmiResult;
@@ -28,21 +27,58 @@ class BMIProvider extends ChangeNotifier {
   double? get tdee => _tdee;
   double? get targetCalories => _targetCalories;
 
-  Future<void> initHive() async {
-    _bmiBox = await Hive.openBox('bmi_box');
-    loadHistory();
+  StreamSubscription<QuerySnapshot>? _historySubscription;
+
+  BMIProvider() {
+    // Listen to Firebase Auth state changes to automatically bind/unbind user BMI logs
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        _listenToHistory(user.uid);
+      } else {
+        _history = [];
+        _historySubscription?.cancel();
+        _historySubscription = null;
+        notifyListeners();
+      }
+    });
   }
 
-  void loadHistory() {
-    _history = _bmiBox.values
-        .cast<Map<dynamic, dynamic>>()
-        .toList()
-        .reversed
-        .toList();
-    notifyListeners();
+  void _listenToHistory(String uid) {
+    _historySubscription?.cancel();
+    _historySubscription = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('history')
+        .orderBy('date', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      _history = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'id': doc.id,
+          'value': (data['value'] as num?)?.toDouble(),
+          'category': data['category'],
+          'date': data['date'],
+          'height': data['height'],
+          'weight': data['weight'],
+          'age': data['age'],
+          'gender': data['gender'],
+          'bmr': (data['bmr'] as num?)?.toDouble(),
+          'tdee': (data['tdee'] as num?)?.toDouble(),
+          'targetCalories': (data['targetCalories'] as num?)?.toDouble(),
+        };
+      }).toList();
+      notifyListeners();
+    });
   }
 
-  void calculateAndSave(String heightStr, String weightStr, int age, String gender) {
+  @override
+  void dispose() {
+    _historySubscription?.cancel();
+    super.dispose();
+  }
+
+  void calculateAndSave(String heightStr, String weightStr, int age, String gender) async {
     final double? heightVal = double.tryParse(heightStr);
     final double? weightVal = double.tryParse(weightStr);
 
@@ -84,21 +120,31 @@ class BMIProvider extends ChangeNotifier {
         _targetCalories = deficit < 1200.0 ? 1200.0 : deficit;
       }
 
-      final newEntry = {
-        'value': _bmiResult,
-        'category': _category,
-        'date': DateTime.now().toIso8601String(),
-        'height': _height,
-        'weight': _weight,
-        'age': _age,
-        'gender': _gender,
-        'bmr': _bmr,
-        'tdee': _tdee,
-        'targetCalories': _targetCalories,
-      };
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        final newEntry = {
+          'value': _bmiResult,
+          'category': _category,
+          'date': DateTime.now().toIso8601String(),
+          'height': _height,
+          'weight': _weight,
+          'age': _age,
+          'gender': _gender,
+          'bmr': _bmr,
+          'tdee': _tdee,
+          'targetCalories': _targetCalories,
+        };
 
-      _bmiBox.add(newEntry);
-      loadHistory();
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(uid)
+              .collection('history')
+              .add(newEntry);
+        } catch (e) {
+          print('Failed to save BMI entry to Firestore: $e');
+        }
+      }
       notifyListeners();
     }
   }

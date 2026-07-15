@@ -1,5 +1,6 @@
 import 'package:digital_khata/features/bmi/screens/calculator_screen.dart';
 import 'package:digital_khata/features/history/screens/history_screen.dart';
+import 'package:digital_khata/features/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -16,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const CalculatorScreen(),
     const HistoryScreen(),
+    const ProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black87,
         currentIndex: _currentIndex,
-        selectedItemColor: Color(0xffdafd87),
+        selectedItemColor: const Color(0xffdafd87),
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {
@@ -38,8 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Iconsax.calculator),
             label: 'Calculator',
           ),
-
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.user),
+            label: 'Profile',
+          ),
         ],
       ),
     );

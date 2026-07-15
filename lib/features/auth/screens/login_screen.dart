@@ -1,3 +1,4 @@
+import 'package:digital_khata/features/auth/widgets/auth_header.dart';
 import 'package:digital_khata/features/auth/screens/signup_screen.dart';
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
@@ -86,52 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 60),
-
-              // Logo + App Name
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffdafd87),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.hourglass_bottom_rounded,
-                      color: Colors.black,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "BMI Calculator",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 50),
-
-              const Text(
-                "Welcome back",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Sign in to continue tracking your health",
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 14,
-                ),
+              const AuthHeader(
+                title: "Welcome back",
+                subtitle: "Sign in to continue tracking your health",
               ),
 
               const SizedBox(height: 40),
