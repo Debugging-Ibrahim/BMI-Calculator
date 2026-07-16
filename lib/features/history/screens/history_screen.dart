@@ -1,5 +1,6 @@
 import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/features/bmi/providers/bmi_provider.dart';
+import 'package:digital_khata/features/history/widgets/bmi_line_chart.dart';
 import 'package:digital_khata/features/history/widgets/history_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -55,9 +56,30 @@ class HistoryScreen extends StatelessWidget {
 
           return ListView.builder(
             padding: const EdgeInsets.all(15.0),
-            itemCount: historyList.length,
+            itemCount: historyList.length + 1,
             itemBuilder: (context, index) {
-              final entry = historyList[index];
+              if (index == 0) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BmiLineChart(history: historyList),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Past Records",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              final entry = historyList[index - 1];
               final double bmi = entry['value'] ?? 0.0;
               final String category = entry['category'] ?? 'N/A';
               final String height = entry['height'] ?? '0';

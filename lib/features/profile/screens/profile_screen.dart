@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _emailController = TextEditingController();
   final _ageController = TextEditingController();
   String _selectedGender = 'Male';
+  String? _profileImageUrl;
 
   bool _isLoading = false;
   bool _isSaving = false;
@@ -48,6 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _emailController.text = data['email'] ?? '';
           _ageController.text = (data['age'] ?? '').toString();
           _selectedGender = data['gender'] ?? 'Male';
+          _profileImageUrl = data['profileImageUrl'];
         }
       } catch (e) {
         if (mounted) {
@@ -63,6 +68,114 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) {
       setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    try {
+      final pickedFile = await picker.pickImage(source: source, imageQuality: 70);
+      if (pickedFile != null) {
+        _uploadImage(File(pickedFile.path));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick image: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _uploadImage(File imageFile) async {
+    setState(() => _isSaving = true);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      try {
+        final ref = FirebaseStorage.instance.ref().child('profile_images').child('$uid.jpg');
+        await ref.putFile(imageFile);
+        final downloadUrl = await ref.getDownloadURL();
+
+        // Save URL in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'profileImageUrl': downloadUrl,
+        });
+
+        if (mounted) {
+          setState(() {
+            _profileImageUrl = downloadUrl;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile image updated successfully!'),
+              backgroundColor: Color(0xffdafd87),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to upload image: $e'),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      }
+    }
+    if (mounted) {
+      setState(() => _isSaving = false);
+    }
+  }
+
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xff1e1f1e),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: Text(
+                  "Select Profile Picture",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined, color: Color(0xffdafd87)),
+                title: const Text("Choose from Gallery", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined, color: Color(0xffdafd87)),
+                title: const Text("Take a Photo", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _saveProfile() async {
@@ -154,21 +267,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Center(
                         child: Column(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: const Color(0xffdafd87).withOpacity(0.1),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xffdafd87),
-                                  width: 1.5,
+                            Stack(
+                              children: [
+                                GestureDetector(
+                                  onTap: _showImageSourceActionSheet,
+                                  child: Container(
+                                    width: 110,
+                                    height: 110,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xffdafd87).withValues(alpha: 0.1),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xffdafd87),
+                                        width: 1.5,
+                                      ),
+                                      image: _profileImageUrl != null && _profileImageUrl!.isNotEmpty
+                                          ? DecorationImage(
+                                              image: NetworkImage(_profileImageUrl!),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                    ),
+                                    child: _profileImageUrl == null || _profileImageUrl!.isEmpty
+                                        ? const Icon(
+                                            Icons.person_rounded,
+                                            color: Color(0xffdafd87),
+                                            size: 50,
+                                          )
+                                        : null,
+                                  ),
                                 ),
-                              ),
-                              child: const Icon(
-                                Icons.person_rounded,
-                                color: Color(0xffdafd87),
-                                size: 50,
-                              ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: GestureDetector(
+                                    onTap: _showImageSourceActionSheet,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xffdafd87),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.camera_alt_rounded,
+                                        color: Colors.black,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 15),
                             Text(
