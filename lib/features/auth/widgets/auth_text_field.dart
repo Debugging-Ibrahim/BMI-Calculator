@@ -24,13 +24,16 @@ class AuthTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white70,
+          style: TextStyle(
+            color: isDark ? Colors.white70 : Colors.black54,
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
@@ -40,37 +43,41 @@ class AuthTextField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+          style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14),
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Colors.white24, fontSize: 14),
-            prefixIcon: Icon(icon, color: Colors.white38, size: 20),
+            hintStyle: TextStyle(
+              color: isDark ? Colors.white24 : Colors.black26,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(
+              icon,
+              color: isDark ? Colors.white38 : Colors.black38,
+              size: 20,
+            ),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: Colors.grey.shade900,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            fillColor: theme.cardColor,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xffdafd87),
+              borderSide: BorderSide(
+                color: theme.primaryColor,
                 width: 1.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: Colors.redAccent, width: 1.5),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: Colors.redAccent, width: 1.5),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
             ),
             errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
           ),

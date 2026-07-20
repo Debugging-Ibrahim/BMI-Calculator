@@ -142,7 +142,7 @@ class BMIProvider extends ChangeNotifier {
               .collection('history')
               .add(newEntry);
         } catch (e) {
-          print('Failed to save BMI entry to Firestore: $e');
+          debugPrint('Failed to save BMI entry to Firestore: $e');
         }
       }
       notifyListeners();

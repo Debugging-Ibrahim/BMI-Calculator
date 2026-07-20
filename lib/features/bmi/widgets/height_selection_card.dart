@@ -23,12 +23,15 @@ class HeightSelectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       height: 200,
       width: 375,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey.shade900,
+        borderRadius: BorderRadius.circular(12),
+        color: theme.cardColor,
       ),
       child: Column(
         children: [
@@ -40,10 +43,10 @@ class HeightSelectionCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Height",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -80,10 +83,10 @@ class HeightSelectionCard extends StatelessWidget {
                 selectedUnit == 'Ft'
                     ? currentValue.toStringAsFixed(1)
                     : currentValue.round().toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 10),
@@ -102,9 +105,9 @@ class HeightSelectionCard extends StatelessWidget {
                   min: minHeight,
                   max: maxHeight,
                   divisions: divisions,
-                  activeColor: Colors.white70,
-                  inactiveColor: Colors.grey.shade800,
-                  thumbColor: const Color(0xffdafd87),
+                  activeColor: isDark ? Colors.white70 : Colors.black54,
+                  inactiveColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                  thumbColor: theme.primaryColor,
                   onChanged: onHeightChanged,
                 ),
               ),

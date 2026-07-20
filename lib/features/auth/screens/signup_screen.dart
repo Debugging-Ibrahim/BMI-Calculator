@@ -103,8 +103,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xff151615),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -173,7 +176,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: Colors.white38,
+                          color: isDark ? Colors.white38 : Colors.black38,
                           size: 20,
                         ),
                         onPressed: () =>
@@ -223,10 +226,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 "Gender",
                                 style: TextStyle(
-                                  color: Colors.white70,
+                                  color: isDark ? Colors.white70 : Colors.black54,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -236,17 +239,17 @@ class _SignupScreenState extends State<SignupScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade900,
+                                  color: theme.cardColor,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     value: _selectedGender,
                                     isExpanded: true,
-                                    dropdownColor: const Color(0xff1e1f1e),
-                                    iconEnabledColor: Colors.white38,
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    dropdownColor: theme.cardColor,
+                                    iconEnabledColor: isDark ? Colors.white38 : Colors.black38,
+                                    style: TextStyle(
+                                      color: theme.colorScheme.onSurface,
                                       fontSize: 14,
                                     ),
                                     items: const [
@@ -292,9 +295,9 @@ class _SignupScreenState extends State<SignupScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Already have an account? ",
-                    style: TextStyle(color: Colors.white54, fontSize: 14),
+                    style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 14),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -305,10 +308,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       "Sign In",
                       style: TextStyle(
-                        color: Color(0xffdafd87),
+                        color: theme.primaryColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),

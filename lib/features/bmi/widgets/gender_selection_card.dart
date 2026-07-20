@@ -16,35 +16,48 @@ class GenderSelectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final Color cardBackground = isSelected
+        ? theme.primaryColor.withValues(alpha: 0.15)
+        : theme.cardColor;
+
+    final Color foregroundColor = isSelected
+        ? theme.colorScheme.onSurface
+        : (isDark ? Colors.white60 : Colors.black54);
+
+    final Color iconColor = isSelected
+        ? theme.primaryColor
+        : (isDark ? Colors.white54 : Colors.black38);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         height: 200,
         width: 175,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: isSelected ? const Color(0xff262826) : Colors.grey.shade900,
-          border: isSelected
-              ? Border.all(
-                  color: const Color(0xffdafd87),
-                  width: 1.5,
-                )
-              : Border.all(color: Colors.transparent),
+          borderRadius: BorderRadius.circular(12),
+          color: cardBackground,
+          border: Border.all(
+            color: isSelected ? theme.primaryColor : Colors.transparent,
+            width: 1.5,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              color: isSelected ? const Color(0xffdafd87) : Colors.white60,
+              color: iconColor,
               size: 35,
             ),
             const SizedBox(height: 30),
             Text(
               gender.toUpperCase(),
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: foregroundColor,
                 fontWeight: FontWeight.bold,
               ),
             ),

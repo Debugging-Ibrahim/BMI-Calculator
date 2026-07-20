@@ -1,5 +1,7 @@
 import 'package:digital_khata/features/bmi/providers/bmi_provider.dart';
 import 'package:digital_khata/core/screens/splash_screen.dart';
+import 'package:digital_khata/theme/theme.dart';
+import 'package:digital_khata/theme/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:digital_khata/firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +20,11 @@ void main() async {
   final bmiProvider = BMIProvider();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => bmiProvider,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => bmiProvider),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -30,9 +35,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.themeMode,
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

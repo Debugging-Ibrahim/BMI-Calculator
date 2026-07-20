@@ -43,6 +43,10 @@ dependencies:
   flutter_dotenv: ^6.0.1
   url_launcher: ^6.3.2
   cloud_firestore: ^6.7.1
+  fl_chart: ^1.2.0
+  firebase_storage: ^13.4.5
+  image_picker: ^1.2.3
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

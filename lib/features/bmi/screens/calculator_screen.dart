@@ -65,22 +65,23 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xff151615),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xff151615),
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
-        leading: const Icon(
+        leading: Icon(
           Icons.hourglass_bottom_rounded,
-          color: Color(0xffdafd87),
+          color: theme.primaryColor,
         ),
         actionsPadding: const EdgeInsets.only(right: 15),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+            icon: Icon(Icons.logout, color: theme.colorScheme.onSurface, size: 20),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              if (mounted) {
+              if (context.mounted) {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -90,9 +91,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             },
           ),
         ],
-        title: const Text(
+        title: Text(
           "BMI Calculator",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(

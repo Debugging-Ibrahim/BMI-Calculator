@@ -21,15 +21,18 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: IndexedStack(index: _currentIndex, children: _screens),
 
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black87,
+        backgroundColor: theme.cardColor,
         currentIndex: _currentIndex,
-        selectedItemColor: const Color(0xffdafd87),
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: theme.primaryColor,
+        unselectedItemColor: isDark ? Colors.grey : Colors.grey.shade600,
         onTap: (index) {
           setState(() {
             _currentIndex = index;

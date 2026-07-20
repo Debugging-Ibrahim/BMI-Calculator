@@ -20,14 +20,18 @@ class MealPlanCard extends StatelessWidget {
         throw Exception('Could not launch ${meal.sourceUrl}');
       }
     } catch (e) {
-      print('Could not launch recipe URL: $e');
+      debugPrint('Could not launch recipe URL: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Card(
-      color: Colors.grey.shade900,
+      color: theme.cardColor,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.only(bottom: 12),
@@ -36,17 +40,16 @@ class MealPlanCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xffdafd87).withOpacity(0.15),
+                color: theme.primaryColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 label.toUpperCase(),
-                style: const TextStyle(
-                  color: Color(0xffdafd87),
+                style: TextStyle(
+                  color: theme.primaryColor,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.0,
@@ -57,8 +60,8 @@ class MealPlanCard extends StatelessWidget {
             // Title
             Text(
               meal.title,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: onSurface,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -67,18 +70,32 @@ class MealPlanCard extends StatelessWidget {
             // Specs Row
             Row(
               children: [
-                const Icon(Icons.access_time_rounded, color: Colors.white38, size: 16),
+                Icon(
+                  Icons.access_time_rounded,
+                  color: isDark ? Colors.white38 : Colors.black38,
+                  size: 16,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   '${meal.readyInMinutes} min',
-                  style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  style: TextStyle(
+                    color: isDark ? Colors.white60 : Colors.black54,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(width: 16),
-                const Icon(Icons.people_outline_rounded, color: Colors.white38, size: 16),
+                Icon(
+                  Icons.people_outline_rounded,
+                  color: isDark ? Colors.white38 : Colors.black38,
+                  size: 16,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   '${meal.servings} servings',
-                  style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  style: TextStyle(
+                    color: isDark ? Colors.white60 : Colors.black54,
+                    fontSize: 13,
+                  ),
                 ),
                 const Spacer(),
                 // View Recipe Text Link
@@ -87,19 +104,19 @@ class MealPlanCard extends StatelessWidget {
                     onTap: _launchUrl,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
                           'View Recipe',
                           style: TextStyle(
-                            color: Color(0xffdafd87),
+                            color: theme.primaryColor,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(width: 2),
+                        const SizedBox(width: 2),
                         Icon(
-                          Icons.arrow_outward_rounded,
-                          color: Color(0xffdafd87),
+                          Icons.arrow_forward_rounded,
+                          color: theme.primaryColor,
                           size: 14,
                         ),
                       ],

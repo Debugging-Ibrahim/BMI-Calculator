@@ -79,8 +79,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xff151615),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -130,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: Colors.white38,
+                          color: isDark ? Colors.white38 : Colors.black38,
                           size: 20,
                         ),
                         onPressed: () =>
@@ -154,10 +157,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: () {},
-                        child: const Text(
+                        child: Text(
                           "Forgot password?",
                           style: TextStyle(
-                            color: Color(0xffdafd87),
+                            color: theme.primaryColor,
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                           ),
@@ -182,15 +185,15 @@ class _LoginScreenState extends State<LoginScreen> {
               // Divider
               Row(
                 children: [
-                  const Expanded(child: Divider(color: Colors.white12)),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
+                  Expanded(child: Divider(color: isDark ? Colors.white12 : Colors.black12)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
                       "or",
-                      style: TextStyle(color: Colors.white38, fontSize: 13),
+                      style: TextStyle(color: isDark ? Colors.white38 : Colors.black38, fontSize: 13),
                     ),
                   ),
-                  const Expanded(child: Divider(color: Colors.white12)),
+                  Expanded(child: Divider(color: isDark ? Colors.white12 : Colors.black12)),
                 ],
               ),
 
@@ -200,9 +203,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: Colors.white54, fontSize: 14),
+                    style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 14),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -213,10 +216,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       "Create Account",
                       style: TextStyle(
-                        color: Color(0xffdafd87),
+                        color: theme.primaryColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),

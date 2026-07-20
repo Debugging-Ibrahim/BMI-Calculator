@@ -18,8 +18,11 @@ class HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Card(
-      color: Colors.grey.shade900,
+      color: theme.cardColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -27,25 +30,28 @@ class HistoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: const Color(0xffdafd87),
+          backgroundColor: theme.primaryColor,
           child: Text(
             bmi.toStringAsFixed(1),
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: isDark ? Colors.black : Colors.white,
             ),
           ),
         ),
         title: Text(
           category,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         subtitle: Text(
           "Height: ${height}cm | Weight: ${weight}kg\nCalculated on: $formattedDate",
-          style: const TextStyle(fontSize: 12, color: Colors.white70),
+          style: TextStyle(
+            fontSize: 12,
+            color: isDark ? Colors.white70 : Colors.black54,
+          ),
         ),
         isThreeLine: true,
       ),

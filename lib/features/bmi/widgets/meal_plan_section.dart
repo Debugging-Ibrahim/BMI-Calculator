@@ -9,33 +9,39 @@ class MealPlanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Spoonacular Meal Plan",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
+        Text(
           "Recommended daily meal options matching your target calories",
-          style: TextStyle(fontSize: 13, color: Colors.white54),
+          style: TextStyle(
+            fontSize: 13,
+            color: isDark ? Colors.white54 : Colors.black54,
+          ),
         ),
         const SizedBox(height: 15),
         FutureBuilder<MealPlan?>(
           future: MealPlanService.fetchMealPlan(targetCalories),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
+              return Center(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40.0),
+                  padding: const EdgeInsets.symmetric(vertical: 40.0),
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xffdafd87),
+                      theme.primaryColor,
                     ),
                   ),
                 ),
@@ -57,9 +63,9 @@ class MealPlanSection extends StatelessWidget {
                 ),
               );
             } else if (!snapshot.hasData || snapshot.data!.meals.isEmpty) {
-              return const Text(
+              return Text(
                 'No meal plan available for this calorie target.',
-                style: TextStyle(color: Colors.white70),
+                style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
               );
             }
 
@@ -71,7 +77,7 @@ class MealPlanSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade900,
+                    color: theme.cardColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -133,12 +139,23 @@ class _NutrientStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final Color labelColor = isHighlight
+        ? theme.primaryColor
+        : (isDark ? Colors.white38 : Colors.black38);
+
+    final Color valueColor = isHighlight
+        ? theme.primaryColor
+        : theme.colorScheme.onSurface;
+
     return Column(
       children: [
         Text(
           label,
           style: TextStyle(
-            color: isHighlight ? const Color(0xffdafd87) : Colors.white38,
+            color: labelColor,
             fontSize: 11,
             fontWeight: FontWeight.bold,
           ),
@@ -147,7 +164,7 @@ class _NutrientStat extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            color: isHighlight ? const Color(0xffdafd87) : Colors.white,
+            color: valueColor,
             fontSize: 13,
             fontWeight: FontWeight.bold,
           ),

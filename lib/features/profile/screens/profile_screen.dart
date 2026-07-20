@@ -3,10 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
+import 'package:digital_khata/theme/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -233,24 +235,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Scaffold(
-      backgroundColor: const Color(0xff151615),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xff151615),
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
-        leading: const Icon(
+        leading: Icon(
           Icons.hourglass_bottom_rounded,
-          color: Color(0xffdafd87),
+          color: theme.primaryColor,
         ),
-        title: const Text(
+        title: Text(
           "Profile",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: onSurface, fontWeight: FontWeight.bold),
         ),
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xffdafd87)),
+                valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
               ),
             )
           : SafeArea(
@@ -275,10 +281,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     width: 110,
                                     height: 110,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xffdafd87).withValues(alpha: 0.1),
+                                      color: theme.primaryColor.withValues(alpha: 0.15),
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: const Color(0xffdafd87),
+                                        color: theme.primaryColor,
                                         width: 1.5,
                                       ),
                                       image: _profileImageUrl != null && _profileImageUrl!.isNotEmpty
@@ -289,9 +295,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           : null,
                                     ),
                                     child: _profileImageUrl == null || _profileImageUrl!.isEmpty
-                                        ? const Icon(
+                                        ? Icon(
                                             Icons.person_rounded,
-                                            color: Color(0xffdafd87),
+                                            color: theme.primaryColor,
                                             size: 50,
                                           )
                                         : null,
@@ -304,13 +310,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     onTap: _showImageSourceActionSheet,
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xffdafd87),
+                                      decoration: BoxDecoration(
+                                        color: theme.primaryColor,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.camera_alt_rounded,
-                                        color: Colors.black,
+                                        color: isDark ? Colors.black : Colors.white,
                                         size: 16,
                                       ),
                                     ),
@@ -321,8 +327,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 15),
                             Text(
                               _nameController.text.isNotEmpty ? _nameController.text : "User Profile",
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: onSurface,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -330,8 +336,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 4),
                             Text(
                               _emailController.text,
-                              style: const TextStyle(
-                                color: Colors.white54,
+                              style: TextStyle(
+                                color: isDark ? Colors.white54 : Colors.black54,
                                 fontSize: 14,
                               ),
                             ),
@@ -361,10 +367,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             "Email Address",
                             style: TextStyle(
-                              color: Colors.white54,
+                              color: isDark ? Colors.white54 : Colors.black54,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
@@ -373,11 +379,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           TextFormField(
                             controller: _emailController,
                             enabled: false,
-                            style: const TextStyle(color: Colors.white38, fontSize: 14),
+                            style: TextStyle(color: onSurface.withValues(alpha: 0.5), fontSize: 14),
                             decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.mail_outline_rounded, color: Colors.white24, size: 20),
+                              prefixIcon: Icon(
+                                Icons.mail_outline_rounded,
+                                color: isDark ? Colors.white24 : Colors.black26,
+                                size: 20,
+                              ),
                               filled: true,
-                              fillColor: Colors.grey.shade900,
+                              fillColor: theme.cardColor,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -420,10 +430,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   "Gender",
                                   style: TextStyle(
-                                    color: Colors.white70,
+                                    color: isDark ? Colors.white70 : Colors.black54,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -432,17 +442,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.shade900,
+                                    color: theme.cardColor,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: _selectedGender,
                                       isExpanded: true,
-                                      dropdownColor: const Color(0xff1e1f1e),
-                                      iconEnabledColor: Colors.white38,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      dropdownColor: theme.cardColor,
+                                      iconEnabledColor: isDark ? Colors.white38 : Colors.black38,
+                                      style: TextStyle(
+                                        color: onSurface,
                                         fontSize: 14,
                                       ),
                                       items: const [
@@ -469,7 +479,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 24),
+
+                      // Theme Toggle ListTile
+                      Consumer<ThemeProvider>(
+                        builder: (context, themeProvider, child) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: theme.cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      themeProvider.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                                      color: theme.primaryColor,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      "Dark Mode",
+                                      style: TextStyle(
+                                        color: onSurface,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Switch(
+                                  value: themeProvider.isDarkMode,
+                                  activeThumbColor: theme.primaryColor,
+                                  onChanged: (bool isDarkVal) {
+                                    themeProvider.toggleTheme(isDarkVal);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 32),
 
                       // Edit/Save Button
                       AuthButton(

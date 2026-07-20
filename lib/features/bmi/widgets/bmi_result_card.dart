@@ -15,10 +15,13 @@ class BmiResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: Colors.grey.shade900,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
@@ -26,11 +29,11 @@ class BmiResultCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Your BMI is",
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white70,
+                  color: isDark ? Colors.white70 : Colors.black54,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -47,10 +50,10 @@ class BmiResultCard extends StatelessWidget {
           const SizedBox(height: 15),
           Text(
             bmi.toStringAsFixed(1),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 64,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 20),

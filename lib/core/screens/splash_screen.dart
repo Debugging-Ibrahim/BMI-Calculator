@@ -33,8 +33,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xff151615),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           Center(
@@ -44,20 +45,20 @@ class _SplashScreenState extends State<SplashScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xffdafd87),
+                    color: theme.primaryColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.hourglass_bottom_rounded,
-                    color: Colors.black,
+                    color: theme.brightness == Brightness.dark ? Colors.black : Colors.white,
                     size: 45,
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   "BMI Calculator",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -65,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ],
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 60,
             left: 0,
             right: 0,
@@ -75,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 25,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xffdafd87)),
+                  valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
                 ),
               ),
             ),

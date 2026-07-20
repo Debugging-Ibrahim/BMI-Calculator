@@ -100,19 +100,23 @@ class ResultScreen extends StatelessWidget {
     final recommendations = getRecommendations(category);
     final categoryColor = getCategoryColor(category);
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Scaffold(
-      backgroundColor: const Color(0xff151615),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xff151615),
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: onSurface, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         actionsPadding: const EdgeInsets.only(right: 15),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+            icon: Icon(Icons.logout, color: onSurface, size: 20),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
@@ -125,9 +129,9 @@ class ResultScreen extends StatelessWidget {
             },
           ),
         ],
-        title: const Text(
+        title: Text(
           "BMI Calculator",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: onSurface, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -136,12 +140,12 @@ class ResultScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 "Result",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: onSurface,
                 ),
               ),
               const SizedBox(height: 20),
@@ -171,19 +175,19 @@ class ResultScreen extends StatelessWidget {
                 // General Diet and Nutrition Recommendations
                 Text(
                   category,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: onSurface,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   "General Nutrition Guidelines",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white54,
+                    color: isDark ? Colors.white54 : Colors.black54,
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -200,10 +204,10 @@ class ResultScreen extends StatelessWidget {
                   onTap: () => Navigator.pop(context),
                 ),
               ] else ...[
-                const Center(
+                Center(
                   child: Text(
                     "Error: No BMI calculation data found.",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    style: TextStyle(fontSize: 18, color: onSurface),
                   ),
                 ),
                 const SizedBox(height: 30),

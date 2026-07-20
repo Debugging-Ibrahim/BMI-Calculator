@@ -11,19 +11,23 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Scaffold(
-      backgroundColor: const Color(0xff151615),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xff151615),
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
-        leading: const Icon(
+        leading: Icon(
           Icons.hourglass_bottom_rounded,
-          color: Color(0xffdafd87),
+          color: theme.primaryColor,
         ),
         actionsPadding: const EdgeInsets.only(right: 15),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white, size: 20),
+            icon: Icon(Icons.logout, color: onSurface, size: 20),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
@@ -36,9 +40,9 @@ class HistoryScreen extends StatelessWidget {
             },
           ),
         ],
-        title: const Text(
+        title: Text(
           "History",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: onSurface, fontWeight: FontWeight.bold),
         ),
       ),
       body: Consumer<BMIProvider>(
@@ -46,10 +50,10 @@ class HistoryScreen extends StatelessWidget {
           final historyList = provider.history;
 
           if (historyList.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 "No past calculations found.",
-                style: TextStyle(fontSize: 18, color: Colors.white60),
+                style: TextStyle(fontSize: 18, color: isDark ? Colors.white60 : Colors.black54),
               ),
             );
           }
@@ -66,10 +70,10 @@ class HistoryScreen extends StatelessWidget {
                     children: [
                       BmiLineChart(history: historyList),
                       const SizedBox(height: 20),
-                      const Text(
+                      Text(
                         "Past Records",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: onSurface,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),

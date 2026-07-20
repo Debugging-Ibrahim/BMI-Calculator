@@ -23,6 +23,9 @@ class BmiLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     // Reverse history list to display chronologically from oldest (left) to newest (right)
     final chronologicalHistory = history.reversed.toList();
 
@@ -49,12 +52,15 @@ class BmiLineChart extends StatelessWidget {
     // Calculate X-axis titles interval dynamically to prevent label overlap
     final double xInterval = (chronologicalHistory.length / 4).clamp(1.0, double.infinity);
 
+    final Color axisLabelColor = isDark ? Colors.white30 : Colors.black38;
+    final Color gridLineColor = isDark ? Colors.white10 : Colors.black12;
+
     return Container(
       height: 220,
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(10, 20, 20, 10),
       decoration: BoxDecoration(
-        color: Colors.grey.shade900,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: LineChart(
@@ -69,12 +75,12 @@ class BmiLineChart extends StatelessWidget {
             horizontalInterval: 5,
             verticalInterval: 1,
             getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.white10,
+              color: gridLineColor,
               strokeWidth: 1,
               dashArray: [4, 4],
             ),
             getDrawingVerticalLine: (value) => FlLine(
-              color: Colors.white10,
+              color: gridLineColor,
               strokeWidth: 1,
               dashArray: [4, 4],
             ),
@@ -91,8 +97,8 @@ class BmiLineChart extends StatelessWidget {
                 getTitlesWidget: (value, meta) {
                   return Text(
                     value.toStringAsFixed(0),
-                    style: const TextStyle(
-                      color: Colors.white30,
+                    style: TextStyle(
+                      color: axisLabelColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 10,
                     ),
@@ -116,8 +122,8 @@ class BmiLineChart extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
                           "${date.day}/${date.month}",
-                          style: const TextStyle(
-                            color: Colors.white38,
+                          style: TextStyle(
+                            color: axisLabelColor,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
@@ -133,11 +139,12 @@ class BmiLineChart extends StatelessWidget {
           ),
           lineTouchData: LineTouchData(
             touchTooltipData: LineTouchTooltipData(
-              getTooltipColor: (spot) => Colors.grey.shade950,
-              tooltipRoundedRadius: 8,
+              getTooltipColor: (spot) => isDark ? const Color(0xFF0D0D0D) : Colors.white,
+              tooltipBorderRadius: BorderRadius.circular(8),
+              tooltipBorder: BorderSide(color: isDark ? Colors.white10 : Colors.black12),
               getTooltipItems: (touchedSpots) {
                 return touchedSpots.map((spot) {
-                  final double bmi = spot.y;
+                  final double bmiVal = spot.y;
                   final int idx = spot.x.toInt();
                   String category = 'N/A';
                   if (idx >= 0 && idx < chronologicalHistory.length) {
@@ -145,9 +152,9 @@ class BmiLineChart extends StatelessWidget {
                   }
 
                   return LineTooltipItem(
-                    "BMI: ${bmi.toStringAsFixed(1)}\n$category",
+                    "BMI: ${bmiVal.toStringAsFixed(1)}\n$category",
                     TextStyle(
-                      color: _getBmiColor(bmi),
+                      color: _getBmiColor(bmiVal),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -161,17 +168,15 @@ class BmiLineChart extends StatelessWidget {
             LineChartBarData(
               spots: spots,
               isCurved: true,
-              curveMode: CurveMode.natural,
               barWidth: 3,
               isStrokeCapRound: true,
-              // Sleek styling with lime green line and filled area gradient
-              color: const Color(0xffdafd87),
+              color: theme.primaryColor,
               belowBarData: BarAreaData(
                 show: true,
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xffdafd87).withValues(alpha: 0.2),
-                    const Color(0xffdafd87).withValues(alpha: 0.0),
+                    theme.primaryColor.withValues(alpha: 0.2),
+                    theme.primaryColor.withValues(alpha: 0.0),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -185,7 +190,7 @@ class BmiLineChart extends StatelessWidget {
                     radius: 5,
                     color: _getBmiColor(bmiVal),
                     strokeWidth: 2,
-                    strokeColor: Colors.grey.shade900,
+                    strokeColor: theme.cardColor,
                   );
                 },
               ),

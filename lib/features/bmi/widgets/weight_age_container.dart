@@ -19,56 +19,76 @@ class WeightAgeContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final btnIconColor = isDark ? Colors.black : Colors.white;
+
     return Container(
       height: 175,
       width: 175,
-
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey.shade900,
+        borderRadius: BorderRadius.circular(12),
+        color: theme.cardColor,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const SizedBox(height: 10),
-          Text(textUp, style: const TextStyle(color: Colors.white)),
+          const SizedBox(height: 12),
+          Text(
+            textUp,
+            style: TextStyle(
+              color: isDark ? Colors.white70 : Colors.black54,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               InkWell(
                 onTap: onDecrement,
+                borderRadius: BorderRadius.circular(10),
                 child: Container(
                   height: 40,
                   width: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xffdafd87),
+                    color: theme.primaryColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Iconsax.minus, color: Colors.black),
+                  child: Icon(Iconsax.minus, color: btnIconColor),
                 ),
               ),
               Text(
                 value.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               InkWell(
                 onTap: onIncrement,
+                borderRadius: BorderRadius.circular(10),
                 child: Container(
                   height: 40,
                   width: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xffdafd87),
+                    color: theme.primaryColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Iconsax.add, color: Colors.black),
+                  child: Icon(Iconsax.add, color: btnIconColor),
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 15),
-          Text(textBtm, style: TextStyle(color: Colors.grey[400])),
+          const SizedBox(height: 10),
+          Text(
+            textBtm,
+            style: TextStyle(
+              color: isDark ? Colors.white30 : Colors.black38,
+              fontSize: 12,
+            ),
+          ),
         ],
       ),
     );

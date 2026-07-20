@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:digital_khata/core/constants/app_colors.dart';
 
 class AuthHeader extends StatelessWidget {
   final String title;
@@ -14,6 +15,10 @@ class AuthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -26,12 +31,12 @@ class AuthHeader extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade900,
+                    color: theme.cardColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white,
+                    color: onSurface,
                     size: 18,
                   ),
                 ),
@@ -40,12 +45,12 @@ class AuthHeader extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xffdafd87),
+                  color: theme.primaryColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.hourglass_bottom_rounded,
-                  color: Colors.black,
+                  color: isDark ? Colors.black : Colors.white,
                   size: 22,
                 ),
               ),
@@ -59,20 +64,20 @@ class AuthHeader extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xffdafd87),
+                  color: theme.primaryColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.hourglass_bottom_rounded,
-                  color: Colors.black,
+                  color: isDark ? Colors.black : Colors.white,
                   size: 22,
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 "BMI Calculator",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: onSurface,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
@@ -83,8 +88,8 @@ class AuthHeader extends StatelessWidget {
         ],
         Text(
           title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: onSurface,
             fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
@@ -92,8 +97,8 @@ class AuthHeader extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: Colors.white54,
+          style: TextStyle(
+            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
             fontSize: 14,
           ),
         ),
