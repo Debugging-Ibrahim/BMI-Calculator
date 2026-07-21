@@ -3,8 +3,10 @@ import 'package:digital_khata/features/auth/screens/signup_screen.dart';
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/core/screens/home_screen.dart';
+import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,6 +31,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
+      final connectivity = Provider.of<ConnectivityProvider>(context, listen: false);
+      if (connectivity.isOffline) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("No internet connection. Please verify your connection and try again."),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
       setState(() => _isLoading = true);
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(

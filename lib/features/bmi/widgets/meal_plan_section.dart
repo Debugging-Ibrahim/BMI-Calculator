@@ -1,6 +1,8 @@
 import 'package:digital_khata/features/bmi/services/meal_plan_service.dart';
 import 'package:digital_khata/features/bmi/widgets/meal_plan_card.dart';
+import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MealPlanSection extends StatelessWidget {
   final double targetCalories;
@@ -11,6 +13,7 @@ class MealPlanSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isOffline = context.watch<ConnectivityProvider>().isOffline;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,37 +35,82 @@ class MealPlanSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 15),
-        FutureBuilder<MealPlan?>(
-          future: MealPlanService.fetchMealPlan(targetCalories),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 40.0),
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      theme.primaryColor,
+        if (isOffline)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDark ? Colors.white10 : Colors.black12,
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.cloud_off_rounded,
+                  color: isDark ? Colors.white30 : Colors.black38,
+                  size: 40,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Meal Plan Offline",
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  "Please connect to the internet to load your custom daily meal plan options.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.black54,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          FutureBuilder<MealPlan?>(
+            future: MealPlanService.fetchMealPlan(targetCalories),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 40.0),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        theme.primaryColor,
+                      ),
                     ),
                   ),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.redAccent.withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Colors.redAccent.withValues(alpha: .3),
+                );
+              } else if (snapshot.hasError) {
+                final errStr = snapshot.error.toString();
+                final isSocketError = errStr.contains('SocketException') || errStr.contains('Failed host lookup');
+                final displayError = isSocketError
+                    ? 'Connection error. Please check your internet connection and try again.'
+                    : 'Could not load meal plan: ${snapshot.error}';
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent.withValues(alpha: .1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.redAccent.withValues(alpha: .3),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Could not load meal plan: ${snapshot.error}',
-                  style: const TextStyle(color: Colors.redAccent, fontSize: 13),
-                ),
-              );
-            } else if (!snapshot.hasData || snapshot.data!.meals.isEmpty) {
+                  child: Text(
+                    displayError,
+                    style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+                  ),
+                );
+              } else if (!snapshot.hasData || snapshot.data!.meals.isEmpty) {
               return Text(
                 'No meal plan available for this calorie target.',
                 style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
