@@ -1,4 +1,6 @@
+import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HistoryCard extends StatelessWidget {
   final double bmi;
@@ -20,6 +22,33 @@ class HistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final unitProvider = context.watch<UnitProvider>();
+
+    final double? heightCm = double.tryParse(height);
+    final double? weightKg = double.tryParse(weight);
+
+    String heightDisplay = "${height}cm";
+    String weightDisplay = "${weight}kg";
+
+    if (unitProvider.isImperial) {
+      if (heightCm != null) {
+        final totalInches = heightCm / 2.54;
+        final feet = (totalInches / 12).floor();
+        final inches = (totalInches % 12).round();
+        heightDisplay = "${feet}ft ${inches}in";
+      }
+      if (weightKg != null) {
+        final lbs = weightKg * 2.20462;
+        weightDisplay = "${lbs.toStringAsFixed(0)}lbs";
+      }
+    } else {
+      if (heightCm != null) {
+        heightDisplay = "${heightCm.toStringAsFixed(0)}cm";
+      }
+      if (weightKg != null) {
+        weightDisplay = "${weightKg.toStringAsFixed(0)}kg";
+      }
+    }
 
     return Card(
       color: theme.cardColor,
@@ -47,7 +76,7 @@ class HistoryCard extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          "Height: ${height}cm | Weight: ${weight}kg\nCalculated on: $formattedDate",
+          "Height: $heightDisplay | Weight: $weightDisplay\nCalculated on: $formattedDate",
           style: TextStyle(
             fontSize: 12,
             color: isDark ? Colors.white70 : Colors.black54,

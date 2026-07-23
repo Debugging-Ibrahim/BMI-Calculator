@@ -4,6 +4,7 @@ import 'package:digital_khata/theme/theme.dart';
 import 'package:digital_khata/theme/theme_provider.dart';
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:digital_khata/core/widgets/connectivity_banner.dart';
+import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:digital_khata/firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => bmiProvider),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => ConnectivityProvider()),
+        ChangeNotifierProvider(create: (context) => UnitProvider()),
       ],
       child: const MyApp(),
     ),

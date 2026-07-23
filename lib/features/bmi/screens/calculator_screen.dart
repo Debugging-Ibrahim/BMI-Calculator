@@ -5,6 +5,7 @@ import 'package:digital_khata/core/widgets/reusable_button.dart';
 import 'package:digital_khata/features/bmi/widgets/gender_selection_card.dart';
 import 'package:digital_khata/features/bmi/widgets/height_selection_card.dart';
 import 'package:digital_khata/features/bmi/widgets/weight_age_container.dart';
+import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -19,10 +20,48 @@ class CalculatorScreen extends StatefulWidget {
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
   String _selectedGender = 'Male';
-  double _currentvalue = 191;
+  double _currentvalue = 170;
   String _selectedUnit = 'Cm';
   int _weight = 65;
   int _age = 27;
+  UnitSystem? _lastUnitSystem;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final unitProvider = Provider.of<UnitProvider>(context);
+    final currentSystem = unitProvider.unitSystem;
+
+    if (_lastUnitSystem == null) {
+      _lastUnitSystem = currentSystem;
+      if (currentSystem == UnitSystem.imperial) {
+        _selectedUnit = 'Ft';
+        _currentvalue = 5.6; // ~170cm
+        _weight = 143; // ~65kg
+      } else {
+        _selectedUnit = 'Cm';
+        _currentvalue = 170.0;
+        _weight = 65;
+      }
+    } else if (_lastUnitSystem != currentSystem) {
+      _lastUnitSystem = currentSystem;
+      if (currentSystem == UnitSystem.imperial) {
+        // Metric -> Imperial
+        _selectedUnit = 'Ft';
+        _currentvalue = (_currentvalue / 30.48).clamp(3.0, 7.5);
+        _weight = (_weight * 2.20462).round().clamp(22, 600);
+      } else {
+        // Imperial -> Metric
+        if (_selectedUnit == 'Ft') {
+          _currentvalue = (_currentvalue * 30.48).clamp(100.0, 220.0);
+        } else if (_selectedUnit == 'In') {
+          _currentvalue = (_currentvalue * 2.54).clamp(100.0, 220.0);
+        }
+        _selectedUnit = 'Cm';
+        _weight = (_weight / 2.20462).round().clamp(10, 300);
+      }
+    }
+  }
 
   double get _minHeight {
     if (_selectedUnit == 'Cm') return 100;
@@ -50,9 +89,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       heightInCm = _currentvalue * 30.48;
     }
 
+    double weightInKg = _weight.toDouble();
+    if (context.read<UnitProvider>().isImperial) {
+      weightInKg = _weight / 2.20462;
+    }
+
     context.read<BMIProvider>().calculateAndSave(
       heightInCm.toStringAsFixed(1),
-      _weight.toString(),
+      weightInKg.toStringAsFixed(1),
       _age,
       _selectedGender,
     );
@@ -101,6 +145,74 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
           child: Column(
             children: [
+              // Unit System Toggle Segmented Control
+              Consumer<UnitProvider>(
+                builder: (context, unitProvider, child) {
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => unitProvider.toggleUnitSystem(false),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: unitProvider.isMetric ? theme.primaryColor : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Metric (cm/kg)",
+                                  style: TextStyle(
+                                    color: unitProvider.isMetric
+                                        ? (theme.brightness == Brightness.dark ? Colors.black : Colors.white)
+                                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => unitProvider.toggleUnitSystem(true),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: unitProvider.isImperial ? theme.primaryColor : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Imperial (ft/lbs)",
+                                  style: TextStyle(
+                                    color: unitProvider.isImperial
+                                        ? (theme.brightness == Brightness.dark ? Colors.black : Colors.white)
+                                        : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
               // Gender Selection Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,14 +242,20 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 divisions: _divisions,
                 onUnitChanged: (unit) {
                   setState(() {
-                    _selectedUnit = unit;
-                    if (unit == 'In') {
-                      _currentvalue = 75;
-                    } else if (unit == 'Ft') {
-                      _currentvalue = 6.2;
-                    } else {
-                      _currentvalue = 191;
+                    if (_selectedUnit == 'Cm' && unit == 'In') {
+                      _currentvalue = (_currentvalue / 2.54).clamp(36.0, 90.0);
+                    } else if (_selectedUnit == 'Cm' && unit == 'Ft') {
+                      _currentvalue = (_currentvalue / 30.48).clamp(3.0, 7.5);
+                    } else if (_selectedUnit == 'In' && unit == 'Cm') {
+                      _currentvalue = (_currentvalue * 2.54).clamp(100.0, 220.0);
+                    } else if (_selectedUnit == 'In' && unit == 'Ft') {
+                      _currentvalue = (_currentvalue / 12.0).clamp(3.0, 7.5);
+                    } else if (_selectedUnit == 'Ft' && unit == 'Cm') {
+                      _currentvalue = (_currentvalue * 30.48).clamp(100.0, 220.0);
+                    } else if (_selectedUnit == 'Ft' && unit == 'In') {
+                      _currentvalue = (_currentvalue * 12.0).clamp(36.0, 90.0);
                     }
+                    _selectedUnit = unit;
                   });
                 },
                 onHeightChanged: (newVal) {
@@ -154,7 +272,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 children: [
                   WeightAgeContainer(
                     textUp: 'Weight',
-                    textBtm: 'kg',
+                    textBtm: context.watch<UnitProvider>().isImperial ? 'lbs' : 'kg',
                     value: _weight,
                     onIncrement: () {
                       setState(() {

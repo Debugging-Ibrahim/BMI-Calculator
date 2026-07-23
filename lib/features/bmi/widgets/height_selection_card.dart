@@ -1,5 +1,7 @@
 import 'package:digital_khata/features/bmi/widgets/selection_container.dart';
+import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HeightSelectionCard extends StatelessWidget {
   final String selectedUnit;
@@ -25,6 +27,7 @@ class HeightSelectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isImperial = context.watch<UnitProvider>().isImperial;
 
     return Container(
       height: 200,
@@ -53,23 +56,25 @@ class HeightSelectionCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    RoundedUnitSelectionContainer(
-                      selected: selectedUnit == 'In',
-                      text: 'In',
-                      onTap: () => onUnitChanged('In'),
-                    ),
-                    const SizedBox(width: 8),
-                    RoundedUnitSelectionContainer(
-                      selected: selectedUnit == 'Ft',
-                      text: 'Ft',
-                      onTap: () => onUnitChanged('Ft'),
-                    ),
-                    const SizedBox(width: 8),
-                    RoundedUnitSelectionContainer(
-                      selected: selectedUnit == 'Cm',
-                      text: 'Cm',
-                      onTap: () => onUnitChanged('Cm'),
-                    ),
+                    if (isImperial) ...[
+                      RoundedUnitSelectionContainer(
+                        selected: selectedUnit == 'In',
+                        text: 'In',
+                        onTap: () => onUnitChanged('In'),
+                      ),
+                      const SizedBox(width: 8),
+                      RoundedUnitSelectionContainer(
+                        selected: selectedUnit == 'Ft',
+                        text: 'Ft',
+                        onTap: () => onUnitChanged('Ft'),
+                      ),
+                    ] else ...[
+                      RoundedUnitSelectionContainer(
+                        selected: selectedUnit == 'Cm',
+                        text: 'Cm',
+                        onTap: () => onUnitChanged('Cm'),
+                      ),
+                    ],
                   ],
                 ),
               ],
