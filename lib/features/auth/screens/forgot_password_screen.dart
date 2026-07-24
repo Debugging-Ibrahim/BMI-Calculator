@@ -1,7 +1,7 @@
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_header.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
-import 'package:digital_khata/features/auth/screens/reset_password_screen.dart';
+import 'package:digital_khata/features/auth/screens/confirm_password_screen.dart';
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +48,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ResetPasswordScreen(email: email),
+              builder: (context) => ConfirmPasswordScreen(email: email),
             ),
           );
         }
