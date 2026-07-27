@@ -1,7 +1,10 @@
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_header.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
+import 'package:digital_khata/core/providers/connectivity_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ConfirmPasswordScreen extends StatefulWidget {
   final String email;
@@ -14,6 +17,7 @@ class ConfirmPasswordScreen extends StatefulWidget {
 
 class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _codeController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
@@ -22,30 +26,78 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
 
   @override
   void dispose() {
+    _codeController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _confirm() {
+  void _confirm() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      final connectivity = Provider.of<ConnectivityProvider>(context, listen: false);
+      if (connectivity.isOffline) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("No internet connection. Please verify your connection and try again."),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
 
-      // Simulate a small network delay for premium visual feedback
-      Future.delayed(const Duration(milliseconds: 800), () {
+      setState(() => _isLoading = true);
+      try {
+        await FirebaseAuth.instance.confirmPasswordReset(
+          code: _codeController.text.trim(),
+          newPassword: _passwordController.text.trim(),
+        );
+
         if (mounted) {
-          setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Passwords match! You can now log in with your new credentials."),
+              content: Text("Password reset successfully! You can now log in."),
               backgroundColor: Colors.green,
             ),
           );
-
-          // Pop back to the Login screen
           Navigator.of(context).popUntil((route) => route.isFirst);
         }
-      });
+      } on FirebaseAuthException catch (e) {
+        String message = 'Failed to reset password. Please verify your code.';
+        if (e.code == 'expired-action-code') {
+          message = 'The reset code has expired. Please request a new one.';
+        } else if (e.code == 'invalid-action-code') {
+          message = 'Invalid reset code. Check if the code was copied correctly.';
+        } else if (e.code == 'user-disabled') {
+          message = 'This user account has been disabled.';
+        } else if (e.code == 'user-not-found') {
+          message = 'User corresponding to this code was not found.';
+        } else if (e.code == 'weak-password') {
+          message = 'The new password is too weak.';
+        } else {
+          message = e.message ?? message;
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 
@@ -64,7 +116,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
             children: [
               AuthHeader(
                 title: "Confirm Password",
-                subtitle: "Please enter and confirm the new password you just created for ${widget.email}.",
+                subtitle: "Enter the reset code sent to your email and choose your new password.",
                 showBackButton: true,
               ),
               const SizedBox(height: 40),
@@ -72,6 +124,21 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    // Verification Code
+                    AuthTextField(
+                      controller: _codeController,
+                      label: "Reset Code",
+                      hint: "Paste the oobCode from the email link",
+                      icon: Icons.vpn_key_outlined,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter the verification code';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
                     // New Password
                     AuthTextField(
                       controller: _passwordController,

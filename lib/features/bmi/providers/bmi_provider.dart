@@ -29,7 +29,91 @@ class BMIProvider extends ChangeNotifier {
 
   StreamSubscription<QuerySnapshot>? _historySubscription;
 
+  // Filter States
+  final TextEditingController searchController = TextEditingController();
+  String _searchQuery = "";
+  String get searchQuery => _searchQuery;
+
+  String _selectedDateRange = "All Time";
+  String get selectedDateRange => _selectedDateRange;
+
+  String _selectedCategory = "All Categories";
+  String get selectedCategory => _selectedCategory;
+
+  void setSelectedDateRange(String dateRange) {
+    if (_selectedDateRange != dateRange) {
+      _selectedDateRange = dateRange;
+      notifyListeners();
+    }
+  }
+
+  void setSelectedCategory(String category) {
+    if (_selectedCategory != category) {
+      _selectedCategory = category;
+      notifyListeners();
+    }
+  }
+
+  void clearFilters() {
+    searchController.clear();
+    _searchQuery = "";
+    _selectedDateRange = "All Time";
+    _selectedCategory = "All Categories";
+    notifyListeners();
+  }
+
+  List<Map<dynamic, dynamic>> get filteredHistory {
+    return _history.where((entry) {
+      // 1. Filter by Date Range
+      if (_selectedDateRange != "All Time") {
+        final rawDate = entry['date'] ?? '';
+        if (rawDate.isEmpty) return false;
+        final date = DateTime.tryParse(rawDate);
+        if (date == null) return false;
+
+        final cutoffDays = _selectedDateRange == "7 Days" ? 7 : 30;
+        final cutoffDate = DateTime.now().subtract(Duration(days: cutoffDays));
+        if (date.isBefore(cutoffDate)) {
+          return false;
+        }
+      }
+
+      // 2. Filter by Category Chip
+      if (_selectedCategory != "All Categories") {
+        final String category = (entry['category'] ?? '').toString().toLowerCase();
+        if (category != _selectedCategory.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // 3. Filter by Search Query (BMI Category & Value)
+      if (_searchQuery.isNotEmpty) {
+        final String category = (entry['category'] ?? '').toLowerCase();
+        final double value = entry['value'] ?? 0.0;
+        final String valueStr = value.toString();
+        final String valueFixedStr = value.toStringAsFixed(1);
+
+        final matchesCategory = category.contains(_searchQuery);
+        final matchesValue = valueStr.contains(_searchQuery) || valueFixedStr.contains(_searchQuery);
+
+        if (!matchesCategory && !matchesValue) {
+          return false;
+        }
+      }
+
+      return true;
+    }).toList();
+  }
+
   BMIProvider() {
+    searchController.addListener(() {
+      final query = searchController.text.trim().toLowerCase();
+      if (_searchQuery != query) {
+        _searchQuery = query;
+        notifyListeners();
+      }
+    });
+
     // Listen to Firebase Auth state changes to automatically bind/unbind user BMI logs
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
@@ -38,6 +122,7 @@ class BMIProvider extends ChangeNotifier {
         _history = [];
         _historySubscription?.cancel();
         _historySubscription = null;
+        clearFilters();
         notifyListeners();
       }
     });
@@ -74,6 +159,7 @@ class BMIProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    searchController.dispose();
     _historySubscription?.cancel();
     super.dispose();
   }
