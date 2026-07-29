@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/core/screens/home_screen.dart';
+import 'package:digital_khata/features/onboarding/screens/onboarding_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,12 +18,35 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 2), () async {
+      if (!mounted) return;
+
       final user = FirebaseAuth.instance.currentUser;
+      final localPrefs = Provider.of<SharedPreferences?>(context, listen: false);
+      bool hasSeenOnboarding = false;
+
+      if (localPrefs != null) {
+        hasSeenOnboarding = localPrefs.getBool('has_seen_onboarding_key') ?? false;
+      } else {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          hasSeenOnboarding = prefs.getBool('has_seen_onboarding_key') ?? false;
+        } catch (e) {
+          debugPrint("Fallback loading of SharedPreferences failed in splash screen: $e");
+        }
+      }
+
+      if (!mounted) return;
+
       if (user != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else if (!hasSeenOnboarding) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
         );
       } else {
         Navigator.pushReplacement(

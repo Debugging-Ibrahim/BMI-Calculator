@@ -5,11 +5,14 @@ import 'package:digital_khata/theme/theme_provider.dart';
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:digital_khata/core/widgets/connectivity_banner.dart';
 import 'package:digital_khata/core/providers/unit_provider.dart';
+import 'package:digital_khata/features/onboarding/providers/onboarding_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:digital_khata/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,15 +23,26 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  SharedPreferences? prefs;
+  try {
+    prefs = await SharedPreferences.getInstance();
+  } catch (e) {
+    debugPrint("Error pre-initializing SharedPreferences in main: $e");
+  }
+
   final bmiProvider = BMIProvider();
+  final themeProvider = ThemeProvider(prefs);
+  final unitProvider = UnitProvider(prefs);
 
   runApp(
     MultiProvider(
       providers: [
+        Provider<SharedPreferences?>.value(value: prefs),
         ChangeNotifierProvider(create: (context) => bmiProvider),
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => themeProvider),
         ChangeNotifierProvider(create: (context) => ConnectivityProvider()),
-        ChangeNotifierProvider(create: (context) => UnitProvider()),
+        ChangeNotifierProvider(create: (context) => unitProvider),
+        ChangeNotifierProvider(create: (context) => OnboardingProvider(prefs)),
       ],
       child: const MyApp(),
     ),

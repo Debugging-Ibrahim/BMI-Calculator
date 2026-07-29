@@ -9,23 +9,31 @@ class UnitProvider extends ChangeNotifier {
 
   bool get isMetric => _unitSystem == UnitSystem.metric;
   bool get isImperial => _unitSystem == UnitSystem.imperial;
+  final SharedPreferences? _prefs;
 
-  UnitProvider() {
+  UnitProvider(this._prefs) {
     _loadUnitFromPrefs();
   }
 
   Future<void> _loadUnitFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Default to false (metric) if not previously saved
-    final isImperialPref = prefs.getBool('is_imperial_key') ?? false;
-    _unitSystem = isImperialPref ? UnitSystem.imperial : UnitSystem.metric;
-    notifyListeners();
+    try {
+      final prefs = _prefs ?? await SharedPreferences.getInstance();
+      final isImperialPref = prefs.getBool('is_imperial_key') ?? false;
+      _unitSystem = isImperialPref ? UnitSystem.imperial : UnitSystem.metric;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error loading unit from SharedPreferences: $e");
+    }
   }
 
   Future<void> toggleUnitSystem(bool isImperial) async {
     _unitSystem = isImperial ? UnitSystem.imperial : UnitSystem.metric;
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_imperial_key', isImperial);
+    try {
+      final prefs = _prefs ?? await SharedPreferences.getInstance();
+      await prefs.setBool('is_imperial_key', isImperial);
+    } catch (e) {
+      debugPrint("Error saving unit to SharedPreferences: $e");
+    }
   }
 }

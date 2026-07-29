@@ -8,6 +8,7 @@ import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:digital_khata/theme/theme_provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -58,7 +59,10 @@ class _SignupScreenState extends State<SignupScreen> {
         // Update the display name with the full name entered
         await userCredential.user?.updateDisplayName(_nameController.text.trim());
 
+        if (!mounted) return;
+
         // Save profile to Cloud Firestore
+        final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
         await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredential.user!.uid)
@@ -67,6 +71,7 @@ class _SignupScreenState extends State<SignupScreen> {
           'email': _emailController.text.trim(),
           'gender': _selectedGender,
           'age': int.tryParse(_ageController.text.trim()) ?? 0,
+          'isDarkMode': themeProvider.isDarkMode,
           'createdAt': FieldValue.serverTimestamp(),
         });
 

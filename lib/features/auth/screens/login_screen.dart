@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:digital_khata/theme/theme_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -65,13 +66,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if (uid != null) {
         final userDoc =
             await FirebaseFirestore.instance.collection('users').doc(uid).get();
-        if (!userDoc.exists) {
+        if (!userDoc.exists && mounted) {
+          final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
           await FirebaseFirestore.instance.collection('users').doc(uid).set({
             'name': userCredential.user?.displayName ?? 'Google User',
             'email': userCredential.user?.email ?? '',
             'gender': 'Male',
             'age': 25,
             'profileImageUrl': userCredential.user?.photoURL ?? '',
+            'isDarkMode': themeProvider.isDarkMode,
           });
         }
       }

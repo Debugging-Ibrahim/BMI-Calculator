@@ -86,6 +86,8 @@ flutter:
     - .env
     - assets/message_sent_professional_theme.json
     - assets/google_logo.png
+    - "assets/OB1 - Graph Lottie Animation.json"
+    - "assets/OB4 - data cloud upload backup.json"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
