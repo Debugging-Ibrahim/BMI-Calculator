@@ -294,6 +294,7 @@ class HistoryScreen extends StatelessWidget {
                           }
 
                           final entry = item.record!;
+                          final String entryId = entry['id'] ?? '';
                           final double bmi = entry['value'] ?? 0.0;
                           final String category = entry['category'] ?? 'N/A';
                           final String height = entry['height'] ?? '0';
@@ -308,12 +309,42 @@ class HistoryScreen extends StatelessWidget {
                                 "${date.day}/${date.month}/${date.year} at ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
                           }
 
-                          return HistoryCard(
-                            bmi: bmi,
-                            category: category,
-                            height: height,
-                            weight: weight,
-                            formattedDate: formattedDate,
+                          return Dismissible(
+                            key: ValueKey(entryId),
+                            direction: DismissDirection.endToStart,
+                            confirmDismiss: (direction) async {
+                              return await _showDeleteConfirmationDialog(context);
+                            },
+                            onDismissed: (direction) {
+                              provider.deleteHistoryEntry(entryId);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Record deleted successfully"),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20.0),
+                              margin: const EdgeInsets.only(bottom: 10.0),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent.withValues(alpha: 0.8),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.delete_outline_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                            child: HistoryCard(
+                              bmi: bmi,
+                              category: category,
+                              height: height,
+                              weight: weight,
+                              formattedDate: formattedDate,
+                            ),
                           );
                         },
                       ),
@@ -356,6 +387,76 @@ class HistoryScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         side: BorderSide.none,
       ),
+    );
+  }
+
+  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: isDark ? const Color(0xff1e1e1e) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.redAccent,
+                size: 28,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                "Delete Record?",
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            "Are you sure you want to delete this BMI calculation record? This action cannot be undone.",
+            style: TextStyle(
+              color: isDark ? Colors.white70 : Colors.black87,
+              fontSize: 14,
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: isDark ? Colors.white54 : Colors.black54,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+              child: const Text(
+                "Delete",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -235,6 +235,28 @@ class BMIProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteHistoryEntry(String entryId) async {
+    final index = _history.indexWhere((entry) => entry['id'] == entryId);
+    if (index != -1) {
+      _history.removeAt(index);
+      notifyListeners();
+    }
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .collection('history')
+            .doc(entryId)
+            .delete();
+      } catch (e) {
+        debugPrint('Failed to delete BMI entry from Firestore: $e');
+      }
+    }
+  }
+
   String _getBMICategory(double bmi) {
     if (bmi < 18.5) {
       return "Underweight";
