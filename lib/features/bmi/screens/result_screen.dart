@@ -5,6 +5,7 @@ import 'package:digital_khata/features/bmi/widgets/daily_stats_row.dart';
 import 'package:digital_khata/features/bmi/widgets/meal_plan_section.dart';
 import 'package:digital_khata/features/bmi/widgets/recommendation_item.dart';
 import 'package:digital_khata/core/widgets/reusable_button.dart';
+import 'package:digital_khata/core/utils/export_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -155,6 +156,82 @@ class ResultScreen extends StatelessWidget {
                   bmi: bmi,
                   category: category,
                   categoryColor: categoryColor,
+                ),
+                const SizedBox(height: 16),
+
+                // Share & Export Actions Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.share_rounded, size: 18, color: theme.primaryColor),
+                        label: Text(
+                          "Share Text",
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(color: theme.primaryColor.withValues(alpha: 0.5), width: 1.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          final now = DateTime.now();
+                          final dateStr = "${now.day}/${now.month}/${now.year}";
+                          ExportHelper.shareSingleResultAsText(
+                            bmi: bmi,
+                            category: category,
+                            height: bmiProvider.height ?? '0',
+                            weight: bmiProvider.weight ?? '0',
+                            date: dateStr,
+                            targetCalories: bmiProvider.targetCalories,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
+                        label: const Text(
+                          "Export PDF",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.primaryColor,
+                          foregroundColor: isDark ? Colors.black : Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          final now = DateTime.now();
+                          final dateStr = "${now.day}/${now.month}/${now.year}";
+                          ExportHelper.exportSinglePdf(
+                            bmi: bmi,
+                            category: category,
+                            height: bmiProvider.height ?? '0',
+                            weight: bmiProvider.weight ?? '0',
+                            date: dateStr,
+                            bmr: bmiProvider.bmr,
+                            tdee: bmiProvider.tdee,
+                            targetCalories: bmiProvider.targetCalories,
+                            recommendations: recommendations,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
 

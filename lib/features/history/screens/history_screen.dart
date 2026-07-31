@@ -2,6 +2,7 @@ import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/features/bmi/providers/bmi_provider.dart';
 import 'package:digital_khata/features/history/widgets/bmi_line_chart.dart';
 import 'package:digital_khata/features/history/widgets/history_card.dart';
+import 'package:digital_khata/core/utils/export_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -79,6 +80,13 @@ class HistoryScreen extends StatelessWidget {
         ),
         actionsPadding: const EdgeInsets.only(right: 15),
         actions: [
+          IconButton(
+            icon: Icon(Icons.picture_as_pdf_rounded, color: theme.primaryColor, size: 22),
+            tooltip: "Export Full Report",
+            onPressed: () {
+              ExportHelper.exportFullHistoryPdf(context.read<BMIProvider>().filteredHistory);
+            },
+          ),
           IconButton(
             icon: Icon(Icons.logout, color: onSurface, size: 20),
             onPressed: () async {
@@ -344,6 +352,9 @@ class HistoryScreen extends StatelessWidget {
                               height: height,
                               weight: weight,
                               formattedDate: formattedDate,
+                              bmr: (entry['bmr'] as num?)?.toDouble(),
+                              tdee: (entry['tdee'] as num?)?.toDouble(),
+                              targetCalories: (entry['targetCalories'] as num?)?.toDouble(),
                             ),
                           );
                         },

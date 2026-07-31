@@ -1,4 +1,5 @@
 import 'package:digital_khata/core/providers/unit_provider.dart';
+import 'package:digital_khata/core/utils/export_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +9,9 @@ class HistoryCard extends StatelessWidget {
   final String height;
   final String weight;
   final String formattedDate;
+  final double? bmr;
+  final double? tdee;
+  final double? targetCalories;
 
   const HistoryCard({
     super.key,
@@ -16,6 +20,9 @@ class HistoryCard extends StatelessWidget {
     required this.height,
     required this.weight,
     required this.formattedDate,
+    this.bmr,
+    this.tdee,
+    this.targetCalories,
   });
 
   @override
@@ -58,6 +65,7 @@ class HistoryCard extends StatelessWidget {
       ),
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
+        onTap: () => _showExportOptionsBottomSheet(context),
         leading: CircleAvatar(
           backgroundColor: theme.primaryColor,
           child: Text(
@@ -83,7 +91,150 @@ class HistoryCard extends StatelessWidget {
           ),
         ),
         isThreeLine: true,
+        trailing: IconButton(
+          icon: Icon(Icons.share_rounded, color: theme.primaryColor, size: 22),
+          tooltip: "Export Options",
+          onPressed: () => _showExportOptionsBottomSheet(context),
+        ),
       ),
     );
+  }
+
+  void _showExportOptionsBottomSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white24 : Colors.black26,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Share or Export Record",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                ListTile(
+                  leading: Icon(Icons.share_rounded, color: theme.primaryColor),
+                  title: Text(
+                    "Share as Text",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  subtitle: Text(
+                    "Share the result as a text message",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white54 : Colors.black54,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ExportHelper.shareSingleResultAsText(
+                      bmi: bmi,
+                      category: category,
+                      height: height,
+                      weight: weight,
+                      date: formattedDate.split(' at ')[0],
+                      targetCalories: targetCalories,
+                    );
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.picture_as_pdf_rounded, color: Colors.redAccent),
+                  title: Text(
+                    "Export as PDF",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  subtitle: Text(
+                    "Download or print a formatted PDF report",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white54 : Colors.black54,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ExportHelper.exportSinglePdf(
+                      bmi: bmi,
+                      category: category,
+                      height: height,
+                      weight: weight,
+                      date: formattedDate,
+                      bmr: bmr,
+                      tdee: tdee,
+                      targetCalories: targetCalories,
+                      recommendations: _getRecommendations(category),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Map<String, String>> _getRecommendations(String category) {
+    final cat = category.toLowerCase();
+    if (cat.contains('underweight')) {
+      return [
+        {'header': 'Eat More Calories:', 'desc': 'Consume more high-calorie foods like nuts, avocados, and healthy oils.'},
+        {'header': 'Portion Size:', 'desc': 'Increase portion sizes during meals to support healthy weight gain.'},
+        {'header': 'Choose Nutrient-Rich Foods:', 'desc': 'Focus on protein and complex carbs for sustained energy.'}
+      ];
+    } else if (cat.contains('normal') || cat.contains('healthy')) {
+      return [
+        {'header': 'Maintain Balance:', 'desc': 'Focus on a well-rounded diet with a mix of proteins, complex carbs, and healthy fats.'},
+        {'header': 'Stay Hydrated:', 'desc': 'Drink at least 8-10 glasses of water daily to maintain metabolic efficiency.'},
+        {'header': 'Active Lifestyle:', 'desc': 'Incorporate regular physical activity including cardiovascular and strength training.'}
+      ];
+    } else if (cat.contains('overweight')) {
+      return [
+        {'header': 'Calorie Control:', 'desc': 'Focus on portion control and reducing calorie intake from sugary foods.'},
+        {'header': 'Eat More Fiber:', 'desc': 'Fruits, vegetables, and whole grains help you feel full longer.'},
+        {'header': 'Regular Exercise:', 'desc': 'Aim for 150 minutes of moderate cardiovascular exercise per week.'}
+      ];
+    } else {
+      return [
+        {'header': 'Consult a Professional:', 'desc': 'Work with a dietitian or healthcare provider to establish a safe health plan.'},
+        {'header': 'Mindful Eating:', 'desc': 'Keep track of food portions, eat slowly, and avoid emotional eating.'},
+        {'header': 'Consistent Physical Activity:', 'desc': 'Incorporate consistent, low-impact exercise daily to support your heart health.'}
+      ];
+    }
   }
 }

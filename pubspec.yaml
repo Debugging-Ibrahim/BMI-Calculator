@@ -50,6 +50,9 @@ dependencies:
   connectivity_plus: ^6.0.5
   lottie: ^3.1.2
   google_sign_in: ^6.2.1
+  share_plus: ^13.3.0
+  pdf: ^3.13.0
+  printing: ^5.15.0
 
 dev_dependencies:
   flutter_test:
