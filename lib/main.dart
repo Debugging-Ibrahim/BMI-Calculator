@@ -8,6 +8,7 @@ import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:digital_khata/features/onboarding/providers/onboarding_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:digital_khata/firebase_options.dart';
+import 'package:digital_khata/core/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await NotificationService.init();
 
   SharedPreferences? prefs;
   try {
