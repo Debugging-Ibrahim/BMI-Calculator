@@ -4,6 +4,7 @@ import 'package:digital_khata/features/auth/screens/login_screen.dart';
 import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/theme/theme_provider.dart';
+import 'package:digital_khata/core/providers/reminder_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -516,6 +517,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   activeThumbColor: theme.primaryColor,
                                   onChanged: (bool isDarkVal) {
                                     themeProvider.toggleTheme(isDarkVal);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Daily Reminder Toggle ListTile
+                      Consumer<ReminderProvider>(
+                        builder: (context, reminderProvider, child) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: theme.cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.notifications_active_outlined,
+                                      color: theme.primaryColor,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      "Daily Reminder",
+                                      style: TextStyle(
+                                        color: onSurface,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Switch(
+                                  value: reminderProvider.isReminderEnabled,
+                                  activeThumbColor: theme.primaryColor,
+                                  onChanged: (bool isEnabled) {
+                                    reminderProvider.toggleReminder(isEnabled);
                                   },
                                 ),
                               ],

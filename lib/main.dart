@@ -9,6 +9,8 @@ import 'package:digital_khata/features/onboarding/providers/onboarding_provider.
 import 'package:firebase_core/firebase_core.dart';
 import 'package:digital_khata/firebase_options.dart';
 import 'package:digital_khata/core/services/notification_service.dart';
+import 'package:digital_khata/core/services/local_notification_service.dart';
+import 'package:digital_khata/core/providers/reminder_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +27,7 @@ void main() async {
   );
 
   await NotificationService.init();
+  await LocalNotificationService.init();
 
   SharedPreferences? prefs;
   try {
@@ -36,6 +39,7 @@ void main() async {
   final bmiProvider = BMIProvider();
   final themeProvider = ThemeProvider(prefs);
   final unitProvider = UnitProvider(prefs);
+  final reminderProvider = ReminderProvider(prefs);
 
   runApp(
     MultiProvider(
@@ -46,6 +50,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (context) => unitProvider),
         ChangeNotifierProvider(create: (context) => OnboardingProvider(prefs)),
+        ChangeNotifierProvider(create: (context) => reminderProvider),
       ],
       child: const MyApp(),
     ),
