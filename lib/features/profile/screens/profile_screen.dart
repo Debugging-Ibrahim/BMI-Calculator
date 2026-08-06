@@ -529,41 +529,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Daily Reminder Toggle ListTile
                       Consumer<ReminderProvider>(
                         builder: (context, reminderProvider, child) {
+                          final isEnabled = reminderProvider.isReminderEnabled;
+                          final timeText = isEnabled
+                              ? " (${reminderProvider.formattedTime})"
+                              : "";
                           return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
                               color: theme.cardColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.notifications_active_outlined,
-                                      color: theme.primaryColor,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "Daily Reminder",
-                                      style: TextStyle(
-                                        color: onSurface,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: isEnabled
+                                    ? () async {
+                                        final TimeOfDay? picked = await showTimePicker(
+                                          context: context,
+                                          initialTime: TimeOfDay(
+                                            hour: reminderProvider.reminderHour,
+                                            minute: reminderProvider.reminderMinute,
+                                          ),
+                                        );
+                                        if (picked != null) {
+                                          reminderProvider.updateReminderTime(
+                                            picked.hour,
+                                            picked.minute,
+                                          );
+                                        }
+                                      }
+                                    : null,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.notifications_active_outlined,
+                                            color: theme.primaryColor,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Text(
+                                            "Daily Reminder$timeText",
+                                            style: TextStyle(
+                                              color: onSurface,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
+                                      Switch(
+                                        value: isEnabled,
+                                        activeThumbColor: theme.primaryColor,
+                                        onChanged: (bool value) async {
+                                          if (value) {
+                                            final TimeOfDay? picked = await showTimePicker(
+                                              context: context,
+                                              initialTime: TimeOfDay(
+                                                hour: reminderProvider.reminderHour,
+                                                minute: reminderProvider.reminderMinute,
+                                              ),
+                                            );
+                                            if (picked != null) {
+                                              await reminderProvider.toggleReminder(
+                                                true,
+                                                hour: picked.hour,
+                                                minute: picked.minute,
+                                              );
+                                            }
+                                          } else {
+                                            await reminderProvider.toggleReminder(false);
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Switch(
-                                  value: reminderProvider.isReminderEnabled,
-                                  activeThumbColor: theme.primaryColor,
-                                  onChanged: (bool isEnabled) {
-                                    reminderProvider.toggleReminder(isEnabled);
-                                  },
-                                ),
-                              ],
+                              ),
                             ),
                           );
                         },

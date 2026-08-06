@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:digital_khata/core/services/analytics_service.dart';
 
 class BMIProvider extends ChangeNotifier {
   List<Map<dynamic, dynamic>> _history = [];
@@ -26,8 +27,17 @@ class BMIProvider extends ChangeNotifier {
   double? get bmr => _bmr;
   double? get tdee => _tdee;
   double? get targetCalories => _targetCalories;
+  bool _isLoadingHistory = false;
+  bool get isLoadingHistory => _isLoadingHistory;
 
-  StreamSubscription<QuerySnapshot>? _historySubscription;
+  bool _isLoadingMore = false;
+  bool get isLoadingMore => _isLoadingMore;
+
+  bool _hasMore = true;
+  bool get hasMore => _hasMore;
+
+  DocumentSnapshot? _lastDocument;
+  static const int _batchSize = 10;
 
   // Filter States
   final TextEditingController searchController = TextEditingController();
@@ -117,50 +127,107 @@ class BMIProvider extends ChangeNotifier {
     // Listen to Firebase Auth state changes to automatically bind/unbind user BMI logs
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
-        _listenToHistory(user.uid);
+        refreshHistory();
       } else {
         _history = [];
-        _historySubscription?.cancel();
-        _historySubscription = null;
+        _lastDocument = null;
+        _hasMore = true;
         clearFilters();
         notifyListeners();
       }
     });
   }
 
-  void _listenToHistory(String uid) {
-    _historySubscription?.cancel();
-    _historySubscription = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('history')
-        .orderBy('date', descending: true)
-        .snapshots()
-        .listen((snapshot) {
-      _history = snapshot.docs.map((doc) {
-        final data = doc.data();
-        return {
-          'id': doc.id,
-          'value': (data['value'] as num?)?.toDouble(),
-          'category': data['category'],
-          'date': data['date'],
-          'height': data['height'],
-          'weight': data['weight'],
-          'age': data['age'],
-          'gender': data['gender'],
-          'bmr': (data['bmr'] as num?)?.toDouble(),
-          'tdee': (data['tdee'] as num?)?.toDouble(),
-          'targetCalories': (data['targetCalories'] as num?)?.toDouble(),
-        };
-      }).toList();
+  Future<void> refreshHistory() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    _isLoadingHistory = true;
+    _hasMore = true;
+    _lastDocument = null;
+    notifyListeners();
+
+    try {
+      final query = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('history')
+          .orderBy('date', descending: true)
+          .limit(_batchSize);
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        _lastDocument = snapshot.docs.last;
+      }
+      _hasMore = snapshot.docs.length == _batchSize;
+
+      _history = snapshot.docs.map((doc) => _mapDocToEntry(doc)).toList();
+    } catch (e) {
+      debugPrint("Error refreshing history: $e");
+    } finally {
+      _isLoadingHistory = false;
       notifyListeners();
-    });
+    }
+  }
+
+  Future<void> fetchNextBatch() async {
+    if (_isLoadingMore || !_hasMore) return;
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    _isLoadingMore = true;
+    notifyListeners();
+
+    try {
+      var query = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('history')
+          .orderBy('date', descending: true)
+          .limit(_batchSize);
+
+      if (_lastDocument != null) {
+        query = query.startAfterDocument(_lastDocument!);
+      }
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        _lastDocument = snapshot.docs.last;
+        final newEntries = snapshot.docs.map((doc) => _mapDocToEntry(doc)).toList();
+        _history.addAll(newEntries);
+      }
+      _hasMore = snapshot.docs.length == _batchSize;
+    } catch (e) {
+      debugPrint("Error fetching next batch: $e");
+    } finally {
+      _isLoadingMore = false;
+      notifyListeners();
+    }
+  }
+
+  Map<dynamic, dynamic> _mapDocToEntry(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return {
+      'id': doc.id,
+      'value': (data['value'] as num?)?.toDouble(),
+      'category': data['category'],
+      'date': data['date'],
+      'height': data['height'],
+      'weight': data['weight'],
+      'age': data['age'],
+      'gender': data['gender'],
+      'bmr': (data['bmr'] as num?)?.toDouble(),
+      'tdee': (data['tdee'] as num?)?.toDouble(),
+      'targetCalories': (data['targetCalories'] as num?)?.toDouble(),
+    };
   }
 
   @override
   void dispose() {
     searchController.dispose();
-    _historySubscription?.cancel();
     super.dispose();
   }
 
@@ -222,11 +289,23 @@ class BMIProvider extends ChangeNotifier {
         };
 
         try {
-          await FirebaseFirestore.instance
+          final docRef = await FirebaseFirestore.instance
               .collection('users')
               .doc(uid)
               .collection('history')
               .add(newEntry);
+          
+          final addedEntry = Map<dynamic, dynamic>.from(newEntry);
+          addedEntry['id'] = docRef.id;
+          _history.insert(0, addedEntry);
+
+          // Log BMI Calculated event in Firebase Analytics
+          await AnalyticsService.logBmiCalculated(
+            bmi: _bmiResult!,
+            category: _category!,
+            height: double.tryParse(_height!) ?? 0.0,
+            weight: double.tryParse(_weight!) ?? 0.0,
+          );
         } catch (e) {
           debugPrint('Failed to save BMI entry to Firestore: $e');
         }

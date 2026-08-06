@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:digital_khata/theme/theme_provider.dart';
+import 'package:digital_khata/core/services/analytics_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -74,6 +75,9 @@ class _SignupScreenState extends State<SignupScreen> {
           'isDarkMode': themeProvider.isDarkMode,
           'createdAt': FieldValue.serverTimestamp(),
         });
+
+        // Log signup event in Firebase Analytics
+        await AnalyticsService.logSignUp('email');
 
         if (mounted) {
           Navigator.pushAndRemoveUntil(

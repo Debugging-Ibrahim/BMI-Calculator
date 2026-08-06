@@ -91,16 +91,14 @@ class LocalNotificationService {
     }
   }
 
-  /// Schedule a daily reminder at 09:00 AM
-  static Future<void> scheduleDailyReminder() async {
+  /// Schedule a daily reminder at a specific hour and minute
+  static Future<void> scheduleDailyReminder(int hour, int minute) async {
     try {
       // Cancel any existing reminder first to prevent duplicates
       await cancelDailyReminder();
 
-      final scheduledDate = tz.TZDateTime.now(
-        tz.local,
-      ).add(const Duration(seconds: 5));
-
+      final scheduledDate = _nextInstanceOfTime(hour, minute);
+      
       debugPrint(
         "Scheduling daily local reminder at: $scheduledDate (Timezone: ${tz.local.name})",
       );
@@ -126,22 +124,22 @@ class LocalNotificationService {
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        // matchDateTimeComponents: DateTimeComponents.time,
+        matchDateTimeComponents: DateTimeComponents.time,
       );
 
-      debugPrint("Successfully scheduled daily reminder.");
+      debugPrint("Successfully scheduled daily reminder at $hour:$minute.");
     } catch (e) {
       debugPrint("Error scheduling daily reminder: $e");
     }
   }
 
   /// Trigger an instant notification to confirm reminders are enabled
-  static Future<void> showInstantNotification() async {
+  static Future<void> showInstantNotification(String formattedTime) async {
     try {
       await _localNotificationsPlugin.show(
         id: reminderId + 1,
         title: 'Daily Reminders Enabled',
-        body: "We'll remind you daily at 9:00 AM to log your BMI!",
+        body: "We'll remind you daily at $formattedTime to log your BMI!",
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
             'daily_bmi_reminders_channel',
@@ -174,19 +172,18 @@ class LocalNotificationService {
     }
   }
 
-  // ignore: unused_element
-  static tz.TZDateTime _nextInstanceOfNineAM() {
+  static tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
       tz.local,
       now.year,
       now.month,
       now.day,
-      9,
-      0,
+      hour,
+      minute,
     );
 
-    // If it's already past 9 AM today, schedule for 9 AM tomorrow
+    // If it's already past the selected time today, schedule for tomorrow
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }

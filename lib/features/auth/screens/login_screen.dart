@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:digital_khata/theme/theme_provider.dart';
+import 'package:digital_khata/core/services/analytics_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -76,8 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
             'profileImageUrl': userCredential.user?.photoURL ?? '',
             'isDarkMode': themeProvider.isDarkMode,
           });
+          // Log signup event in Firebase Analytics
+          await AnalyticsService.logSignUp('google');
         }
       }
+
+      // Log login event in Firebase Analytics
+      await AnalyticsService.logLogin('google');
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -128,6 +134,10 @@ class _LoginScreenState extends State<LoginScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+
+        // Log login event in Firebase Analytics
+        await AnalyticsService.logLogin('email');
+
         if (mounted) {
           Navigator.pushReplacement(
             context,

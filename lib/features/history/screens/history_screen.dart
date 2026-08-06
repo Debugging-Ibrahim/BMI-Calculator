@@ -113,12 +113,25 @@ class HistoryScreen extends StatelessWidget {
           final sectionItems = _buildSectionItems(filteredHistory);
 
           if (originalHistory.isEmpty) {
-            return Center(
-              child: Text(
-                "No past calculations found.",
-                style: TextStyle(fontSize: 18, color: isDark ? Colors.white60 : Colors.black54),
-              ),
-            );
+            return provider.isLoadingHistory
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                    onRefresh: () => provider.refreshHistory(),
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "No past calculations found.",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: isDark ? Colors.white60 : Colors.black54,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
           }
 
           return Column(
@@ -273,91 +286,113 @@ class HistoryScreen extends StatelessWidget {
                           ],
                         ),
                       )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(15.0),
-                        itemCount: sectionItems.length + 1,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: BmiLineChart(history: filteredHistory),
-                            );
-                          }
+                    : RefreshIndicator(
+                        onRefresh: () => provider.refreshHistory(),
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (scrollInfo.metrics.pixels >=
+                                scrollInfo.metrics.maxScrollExtent * 0.9) {
+                              provider.fetchNextBatch();
+                            }
+                            return false;
+                          },
+                          child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(15.0),
+                            itemCount: sectionItems.length + 1 + (provider.isLoadingMore ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: BmiLineChart(history: filteredHistory),
+                                );
+                              }
 
-                          final item = sectionItems[index - 1];
+                              if (index == sectionItems.length + 1) {
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
 
-                          if (item.isHeader) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                              child: Text(
-                                item.title,
-                                style: TextStyle(
-                                  color: theme.primaryColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5,
+                              final item = sectionItems[index - 1];
+
+                              if (item.isHeader) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                                  child: Text(
+                                    item.title,
+                                    style: TextStyle(
+                                      color: theme.primaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final entry = item.record!;
+                              final String entryId = entry['id'] ?? '';
+                              final double bmi = entry['value'] ?? 0.0;
+                              final String category = entry['category'] ?? 'N/A';
+                              final String height = entry['height'] ?? '0';
+                              final String weight = entry['weight'] ?? '0';
+
+                              // Formatting the date saved in ISO string
+                              final String rawDate = entry['date'] ?? '';
+                              String formattedDate = 'Unknown Date';
+                              if (rawDate.isNotEmpty) {
+                                final date = DateTime.parse(rawDate);
+                                formattedDate =
+                                    "${date.day}/${date.month}/${date.year} at ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
+                              }
+
+                              return Dismissible(
+                                key: ValueKey(entryId),
+                                direction: DismissDirection.endToStart,
+                                confirmDismiss: (direction) async {
+                                  return await _showDeleteConfirmationDialog(context);
+                                },
+                                onDismissed: (direction) {
+                                  provider.deleteHistoryEntry(entryId);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Record deleted successfully"),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 20.0),
+                                  margin: const EdgeInsets.only(bottom: 10.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent.withValues(alpha: 0.8),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-
-                          final entry = item.record!;
-                          final String entryId = entry['id'] ?? '';
-                          final double bmi = entry['value'] ?? 0.0;
-                          final String category = entry['category'] ?? 'N/A';
-                          final String height = entry['height'] ?? '0';
-                          final String weight = entry['weight'] ?? '0';
-
-                          // Formatting the date saved in ISO string
-                          final String rawDate = entry['date'] ?? '';
-                          String formattedDate = 'Unknown Date';
-                          if (rawDate.isNotEmpty) {
-                            final date = DateTime.parse(rawDate);
-                            formattedDate =
-                                "${date.day}/${date.month}/${date.year} at ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
-                          }
-
-                          return Dismissible(
-                            key: ValueKey(entryId),
-                            direction: DismissDirection.endToStart,
-                            confirmDismiss: (direction) async {
-                              return await _showDeleteConfirmationDialog(context);
-                            },
-                            onDismissed: (direction) {
-                              provider.deleteHistoryEntry(entryId);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Record deleted successfully"),
-                                  duration: Duration(seconds: 2),
+                                child: HistoryCard(
+                                  bmi: bmi,
+                                  category: category,
+                                  height: height,
+                                  weight: weight,
+                                  formattedDate: formattedDate,
+                                  bmr: (entry['bmr'] as num?)?.toDouble(),
+                                  tdee: (entry['tdee'] as num?)?.toDouble(),
+                                  targetCalories: (entry['targetCalories'] as num?)?.toDouble(),
                                 ),
                               );
                             },
-                            background: Container(
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20.0),
-                              margin: const EdgeInsets.only(bottom: 10.0),
-                              decoration: BoxDecoration(
-                                color: Colors.redAccent.withValues(alpha: 0.8),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.delete_outline_rounded,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                            child: HistoryCard(
-                              bmi: bmi,
-                              category: category,
-                              height: height,
-                              weight: weight,
-                              formattedDate: formattedDate,
-                              bmr: (entry['bmr'] as num?)?.toDouble(),
-                              tdee: (entry['tdee'] as num?)?.toDouble(),
-                              targetCalories: (entry['targetCalories'] as num?)?.toDouble(),
-                            ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
               ),
             ],
