@@ -7,10 +7,12 @@ import 'package:digital_khata/core/widgets/connectivity_banner.dart';
 import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:digital_khata/features/onboarding/providers/onboarding_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:digital_khata/firebase_options.dart';
 import 'package:digital_khata/core/services/notification_service.dart';
 import 'package:digital_khata/core/services/local_notification_service.dart';
 import 'package:digital_khata/core/providers/reminder_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +27,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Pass all uncaught framework errors to Crashlytics
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+
+  // Pass all uncaught asynchronous errors to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   await NotificationService.init();
   await LocalNotificationService.init();

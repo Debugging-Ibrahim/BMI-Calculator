@@ -6,6 +6,7 @@ import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/theme/theme_provider.dart';
 import 'package:digital_khata/core/providers/reminder_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -232,6 +233,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
         (route) => false,
       );
     }
+  }
+
+  void _showTestCrashDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          backgroundColor: theme.cardColor,
+          title: const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent),
+              SizedBox(width: 8),
+              Text(
+                'Test Crashlytics',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: const Text(
+            'This will intentionally force an app crash using FirebaseCrashlytics.instance.crash().\n\n'
+            'After the app crashes, please reopen it so the crash report can be sent to Firebase Console.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                FirebaseCrashlytics.instance.crash();
+              },
+              child: const Text('Crash Now'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -613,6 +657,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           );
                         },
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Test Crashlytics Option
+                      Container(
+                        decoration: BoxDecoration(
+                          color: theme.cardColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: _showTestCrashDialog,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.bug_report_outlined,
+                                    color: Colors.orangeAccent,
+                                    size: 22,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Test Firebase Crashlytics",
+                                          style: TextStyle(
+                                            color: onSurface,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          "Trigger a test crash to verify console logs",
+                                          style: TextStyle(
+                                            color: isDark ? Colors.white54 : Colors.black54,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: isDark ? Colors.white38 : Colors.black38,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 32),
 
