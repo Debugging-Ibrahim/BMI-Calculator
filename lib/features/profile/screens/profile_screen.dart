@@ -5,6 +5,8 @@ import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/theme/theme_provider.dart';
 import 'package:digital_khata/core/providers/reminder_provider.dart';
+import 'package:digital_khata/core/providers/language_provider.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -280,6 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final onSurface = theme.colorScheme.onSurface;
@@ -294,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           color: theme.primaryColor,
         ),
         title: Text(
-          "Profile",
+          l10n?.profile ?? "Profile",
           style: TextStyle(color: onSurface, fontWeight: FontWeight.bold),
         ),
       ),
@@ -547,7 +550,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                     const SizedBox(width: 12),
                                     Text(
-                                      "Dark Mode",
+                                      l10n?.darkMode ?? "Dark Mode",
                                       style: TextStyle(
                                         color: onSurface,
                                         fontSize: 14,
@@ -617,7 +620,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           ),
                                           const SizedBox(width: 12),
                                           Text(
-                                            "Daily Reminder$timeText",
+                                            "${l10n?.dailyReminder ?? 'Daily Reminder'}$timeText",
                                             style: TextStyle(
                                               color: onSurface,
                                               fontSize: 14,
@@ -654,6 +657,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                               ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Language Selector Tile
+                      Consumer<LanguageProvider>(
+                        builder: (context, languageProvider, child) {
+                          final l10n = AppLocalizations.of(context);
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: theme.cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.language_rounded,
+                                      color: theme.primaryColor,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      l10n?.language ?? "Language",
+                                      style: TextStyle(
+                                        color: onSurface,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: languageProvider.locale.languageCode,
+                                    dropdownColor: theme.cardColor,
+                                    iconEnabledColor: isDark ? Colors.white38 : Colors.black38,
+                                    style: TextStyle(
+                                      color: onSurface,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'en',
+                                        child: Text('🇬🇧 English'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'ur',
+                                        child: Text('🇵🇰 اردو'),
+                                      ),
+                                    ],
+                                    onChanged: (String? code) {
+                                      if (code != null) {
+                                        languageProvider.setLocale(Locale(code));
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         },
@@ -718,7 +786,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // Edit/Save Button
                       AuthButton(
-                        text: _isSaving ? "Saving..." : "Save Changes",
+                        text: _isSaving
+                            ? (l10n?.saving ?? "Saving...")
+                            : (l10n?.saveChanges ?? "Save Changes"),
                         onTap: _saveProfile,
                         isLoading: _isSaving,
                       ),
@@ -737,14 +807,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           onPressed: _logout,
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
-                              SizedBox(width: 8),
+                              const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
+                              const SizedBox(width: 8),
                               Text(
-                                "Logout",
-                                style: TextStyle(
+                                l10n?.logout ?? "Logout",
+                                style: const TextStyle(
                                   color: Colors.redAccent,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

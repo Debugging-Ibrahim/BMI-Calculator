@@ -2,6 +2,7 @@ import 'package:digital_khata/features/bmi/screens/calculator_screen.dart';
 import 'package:digital_khata/features/history/screens/history_screen.dart';
 import 'package:digital_khata/features/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,8 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
     const HistoryScreen(),
     const ProfileScreen(),
   ];
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -38,18 +41,18 @@ class _HomeScreenState extends State<HomeScreen> {
             _currentIndex = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.calculator),
-            label: 'Calculator',
+            icon: const Icon(Iconsax.calculator),
+            label: l10n?.bmiCalculator ?? 'Calculator',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
+            icon: const Icon(Icons.history),
+            label: l10n?.history ?? 'History',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.user),
-            label: 'Profile',
+            icon: const Icon(Iconsax.user),
+            label: l10n?.profile ?? 'Profile',
           ),
         ],
       ),

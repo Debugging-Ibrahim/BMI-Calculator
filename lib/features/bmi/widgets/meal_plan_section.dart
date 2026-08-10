@@ -1,6 +1,7 @@
 import 'package:digital_khata/features/bmi/services/meal_plan_service.dart';
 import 'package:digital_khata/features/bmi/widgets/meal_plan_card.dart';
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ class MealPlanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isOffline = context.watch<ConnectivityProvider>().isOffline;
@@ -19,7 +21,7 @@ class MealPlanSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Spoonacular Meal Plan",
+          l10n?.spoonacularMealPlan ?? "Spoonacular Meal Plan",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -28,7 +30,7 @@ class MealPlanSection extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          "Recommended daily meal options matching your target calories",
+          l10n?.spoonacularMealPlanSub ?? "Recommended daily meal options matching your target calories",
           style: TextStyle(
             fontSize: 13,
             color: isDark ? Colors.white54 : Colors.black54,
@@ -55,7 +57,7 @@ class MealPlanSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  "Meal Plan Offline",
+                  l10n?.mealPlanOffline ?? "Meal Plan Offline",
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
@@ -64,7 +66,7 @@ class MealPlanSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  "Please connect to the internet to load your custom daily meal plan options.",
+                  l10n?.mealPlanOfflineSub ?? "Please connect to the internet to load your custom daily meal plan options.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isDark ? Colors.white54 : Colors.black54,
@@ -93,7 +95,7 @@ class MealPlanSection extends StatelessWidget {
                 final errStr = snapshot.error.toString();
                 final isSocketError = errStr.contains('SocketException') || errStr.contains('Failed host lookup');
                 final displayError = isSocketError
-                    ? 'Connection error. Please check your internet connection and try again.'
+                    ? (l10n?.noInternetConnection ?? 'Connection error. Please check your internet connection and try again.')
                     : 'Could not load meal plan: ${snapshot.error}';
                 return Container(
                   width: double.infinity,
@@ -132,19 +134,19 @@ class MealPlanSection extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _NutrientStat(
-                        label: 'Protein',
+                        label: l10n?.protein ?? 'Protein',
                         value: '${mealPlan.nutrients.protein.round()}g',
                       ),
                       _NutrientStat(
-                        label: 'Carbs',
+                        label: l10n?.carbs ?? 'Carbs',
                         value: '${mealPlan.nutrients.carbohydrates.round()}g',
                       ),
                       _NutrientStat(
-                        label: 'Fat',
+                        label: l10n?.fat ?? 'Fat',
                         value: '${mealPlan.nutrients.fat.round()}g',
                       ),
                       _NutrientStat(
-                        label: 'Calories',
+                        label: l10n?.calories ?? 'Calories',
                         value: '${mealPlan.nutrients.calories.round()} kcal',
                         isHighlight: true,
                       ),
@@ -156,14 +158,17 @@ class MealPlanSection extends StatelessWidget {
                 if (mealPlan.meals.isNotEmpty)
                   MealPlanCard(
                     meal: mealPlan.meals[0],
-                    label: 'Meal 1: Breakfast',
+                    label: l10n?.breakfast ?? 'Meal 1: Breakfast',
                   ),
                 if (mealPlan.meals.length > 1)
-                  MealPlanCard(meal: mealPlan.meals[1], label: 'Meal 2: Lunch'),
+                  MealPlanCard(
+                    meal: mealPlan.meals[1],
+                    label: l10n?.lunch ?? 'Meal 2: Lunch',
+                  ),
                 if (mealPlan.meals.length > 2)
                   MealPlanCard(
                     meal: mealPlan.meals[2],
-                    label: 'Meal 3: Dinner',
+                    label: l10n?.dinner ?? 'Meal 3: Dinner',
                   ),
               ],
             );

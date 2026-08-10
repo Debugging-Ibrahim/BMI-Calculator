@@ -6,6 +6,7 @@ import 'package:digital_khata/features/bmi/widgets/meal_plan_section.dart';
 import 'package:digital_khata/features/bmi/widgets/recommendation_item.dart';
 import 'package:digital_khata/core/widgets/reusable_button.dart';
 import 'package:digital_khata/core/utils/export_helper.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,78 +15,122 @@ class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key});
 
   Color getCategoryColor(String? category) {
-    if (category == 'Underweight') {
+    if (category == null) return Colors.white;
+    final cat = category.toLowerCase();
+    if (cat.contains('underweight')) {
       return const Color(0xffdafd87);
-    } else if (category == 'Normal Weight') {
+    } else if (cat.contains('normal') || cat.contains('healthy')) {
       return Colors.greenAccent;
-    } else if (category == 'Overweight') {
+    } else if (cat.contains('overweight')) {
       return Colors.orangeAccent;
-    } else if (category == 'Obesity') {
+    } else if (cat.contains('obese') || cat.contains('obesity')) {
       return Colors.redAccent;
     } else {
       return Colors.white;
     }
   }
 
-  List<Map<String, String>> getRecommendations(String? category) {
-    if (category == 'Underweight') {
+  String _getLocalizedCategory(String? cat, AppLocalizations? l10n) {
+    if (cat == null) return '';
+    final lower = cat.toLowerCase();
+    if (lower.contains('underweight')) {
+      return l10n?.underweight ?? cat;
+    } else if (lower.contains('normal') || lower.contains('healthy')) {
+      return l10n?.normalWeight ?? cat;
+    } else if (lower.contains('overweight')) {
+      return l10n?.overweight ?? cat;
+    } else if (lower.contains('obese') || lower.contains('obesity')) {
+      return l10n?.obesity ?? cat;
+    }
+    return cat;
+  }
+
+  List<Map<String, String>> getRecommendations(String? category, AppLocalizations? l10n) {
+    final cat = category?.toLowerCase() ?? '';
+    final isUrdu = l10n?.localeName == 'ur';
+
+    if (cat.contains('underweight')) {
       return [
         {
-          'header': 'Eat More Calories:',
-          'desc': 'Consume more high-calorie foods like nuts, avocados, and healthy oils.'
+          'header': isUrdu ? 'زیادہ کیلوریز کھائیں:' : 'Eat More Calories:',
+          'desc': isUrdu
+              ? 'زیادہ کیلوریز والی غذاؤں جیسے گری دار میوے اور صحت بخش تیل کا استعمال کریں۔'
+              : 'Consume more high-calorie foods like nuts, avocados, and healthy oils.'
         },
         {
-          'header': 'Portion Size:',
-          'desc': 'Increase portion sizes during meals to support healthy weight gain.'
+          'header': isUrdu ? 'خوراک کا سائز:' : 'Portion Size:',
+          'desc': isUrdu
+              ? 'صحت مند وزن بڑھانے کے لیے کھانوں کے سائز میں اضافہ کریں۔'
+              : 'Increase portion sizes during meals to support healthy weight gain.'
         },
         {
-          'header': 'Choose Nutrient-Rich Foods:',
-          'desc': 'Focus on foods rich in protein (lean meats, fish, eggs, legumes) and complex carbohydrates for sustained energy.'
+          'header': isUrdu ? 'غذائیت سے بھرپور غذاؤں کا انتخاب کریں:' : 'Choose Nutrient-Rich Foods:',
+          'desc': isUrdu
+              ? 'توانائی برقرار رکھنے کے لیے پروٹین اور پیچیدہ کاربوہائیڈریٹس پر توجہ دیں۔'
+              : 'Focus on foods rich in protein (lean meats, fish, eggs, legumes) and complex carbohydrates for sustained energy.'
         }
       ];
-    } else if (category == 'Normal Weight' || category == 'Healthy Weight') {
+    } else if (cat.contains('normal') || cat.contains('healthy')) {
       return [
         {
-          'header': 'Maintain Balance:',
-          'desc': 'Focus on a well-rounded diet with a mix of proteins, complex carbs, and healthy fats.'
+          'header': isUrdu ? 'توازن برقرار رکھیں:' : 'Maintain Balance:',
+          'desc': isUrdu
+              ? 'پروٹین، کاربوہائیڈریٹس اور صحت بخش چکنائی کی متوازن غذا پر توجہ دیں۔'
+              : 'Focus on a well-rounded diet with a mix of proteins, complex carbs, and healthy fats.'
         },
         {
-          'header': 'Stay Hydrated:',
-          'desc': 'Drink at least 8-10 glasses of water daily to maintain metabolic efficiency.'
+          'header': isUrdu ? 'پانی کا مناسب استعمال:' : 'Stay Hydrated:',
+          'desc': isUrdu
+              ? 'میٹابولزم کو بہترین رکھنے کے لیے روزانہ کم از کم 8 سے 10 گلاس پانی پیئیں۔'
+              : 'Drink at least 8-10 glasses of water daily to maintain metabolic efficiency.'
         },
         {
-          'header': 'Active Lifestyle:',
-          'desc': 'Incorporate regular physical activity including cardiovascular and strength training.'
+          'header': isUrdu ? 'فعال طرز زندگی:' : 'Active Lifestyle:',
+          'desc': isUrdu
+              ? 'باقاعدگی سے ورزش اور جسمانی سرگرمی کو اپنے معمول کا حصہ بنائیں۔'
+              : 'Incorporate regular physical activity including cardiovascular and strength training.'
         }
       ];
-    } else if (category == 'Overweight') {
+    } else if (cat.contains('overweight')) {
       return [
         {
-          'header': 'Calorie Control:',
-          'desc': 'Focus on portion control and reducing calorie intake from sugary foods.'
+          'header': isUrdu ? 'کیلوریز کا کنٹرول:' : 'Calorie Control:',
+          'desc': isUrdu
+              ? 'میٹھی چیزوں سے پرہیز اور کیلوریز پر کنٹرول حاصل کریں۔'
+              : 'Focus on portion control and reducing calorie intake from sugary foods.'
         },
         {
-          'header': 'Eat More Fiber:',
-          'desc': 'Fruits, vegetables, and whole grains help you feel full longer.'
+          'header': isUrdu ? 'فائبر کا استعمال:' : 'Eat More Fiber:',
+          'desc': isUrdu
+              ? 'پھل، سبزیاں اور اناج آپ کو زیادہ دیر تک سیر رکھتے ہیں۔'
+              : 'Fruits, vegetables, and whole grains help you feel full longer.'
         },
         {
-          'header': 'Regular Exercise:',
-          'desc': 'Aim for 150 minutes of moderate cardiovascular exercise per week.'
+          'header': isUrdu ? 'باقاعدہ ورزش:' : 'Regular Exercise:',
+          'desc': isUrdu
+              ? 'ہفتے میں 150 منٹ کی معتدل ورزش کا ہدف رکھیں۔'
+              : 'Aim for 150 minutes of moderate cardiovascular exercise per week.'
         }
       ];
     } else {
       return [
         {
-          'header': 'Consult a Professional:',
-          'desc': 'Work with a dietitian or healthcare provider to establish a safe health plan.'
+          'header': isUrdu ? 'ماہر سے مشورہ:' : 'Consult a Professional:',
+          'desc': isUrdu
+              ? 'صحت مند منصوبے کے لیے کسی ڈاکٹر یا ماہر غذائیت سے مشورہ کریں۔'
+              : 'Work with a dietitian or healthcare provider to establish a safe health plan.'
         },
         {
-          'header': 'Mindful Eating:',
-          'desc': 'Keep track of food portions, eat slowly, and avoid emotional eating.'
+          'header': isUrdu ? 'احتیاط سے کھانا:' : 'Mindful Eating:',
+          'desc': isUrdu
+              ? 'خوراک کی مقدار پر نظر رکھیں اور آہستہ آہستہ کھائیں۔'
+              : 'Keep track of food portions, eat slowly, and avoid emotional eating.'
         },
         {
-          'header': 'Consistent Physical Activity:',
-          'desc': 'Incorporate consistent, low-impact exercise daily to support your heart health.'
+          'header': isUrdu ? 'مسلسل جسمانی سرگرمی:' : 'Consistent Physical Activity:',
+          'desc': isUrdu
+              ? 'دل کی صحت کے لیے روزانہ باقاعدگی سے ہلکی ورزش کریں۔'
+              : 'Incorporate consistent, low-impact exercise daily to support your heart health.'
         }
       ];
     }
@@ -93,13 +138,15 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bmiProvider = Provider.of<BMIProvider>(context, listen: false);
 
     final bmi = bmiProvider.bmiResult;
     final category = bmiProvider.category;
 
-    final recommendations = getRecommendations(category);
+    final recommendations = getRecommendations(category, l10n);
     final categoryColor = getCategoryColor(category);
+    final localizedCategory = _getLocalizedCategory(category, l10n);
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -131,7 +178,7 @@ class ResultScreen extends StatelessWidget {
           ),
         ],
         title: Text(
-          "BMI Calculator",
+          l10n?.bmiCalculator ?? "BMI Calculator",
           style: TextStyle(color: onSurface, fontWeight: FontWeight.bold),
         ),
       ),
@@ -142,7 +189,7 @@ class ResultScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Result",
+                l10n?.result ?? "Result",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -166,7 +213,7 @@ class ResultScreen extends StatelessWidget {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.share_rounded, size: 18, color: theme.primaryColor),
                         label: Text(
-                          "Share Text",
+                          l10n?.shareText ?? "Share Text",
                           style: TextStyle(
                             color: theme.colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
@@ -198,9 +245,9 @@ class ResultScreen extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.picture_as_pdf_rounded, size: 18),
-                        label: const Text(
-                          "Export PDF",
-                          style: TextStyle(
+                        label: Text(
+                          l10n?.exportPdf ?? "Export PDF",
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
                           ),
@@ -251,7 +298,7 @@ class ResultScreen extends StatelessWidget {
 
                 // General Diet and Nutrition Recommendations
                 Text(
-                  category,
+                  localizedCategory,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -260,7 +307,7 @@ class ResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  "General Nutrition Guidelines",
+                  l10n?.generalNutritionGuidelines ?? "General Nutrition Guidelines",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -276,20 +323,20 @@ class ResultScreen extends StatelessWidget {
                 const SizedBox(height: 25),
 
                 ReUsableButton(
-                  text: "Re-Calculate",
+                  text: l10n?.reCalculate ?? "Re-Calculate",
                   icon: Icons.subdirectory_arrow_left,
                   onTap: () => Navigator.pop(context),
                 ),
               ] else ...[
                 Center(
                   child: Text(
-                    "Error: No BMI calculation data found.",
+                    l10n?.noHistoryFound ?? "Error: No BMI calculation data found.",
                     style: TextStyle(fontSize: 18, color: onSurface),
                   ),
                 ),
                 const SizedBox(height: 30),
                 ReUsableButton(
-                  text: "Go to Calculator",
+                  text: l10n?.reCalculate ?? "Go to Calculator",
                   icon: Icons.arrow_back,
                   onTap: () => Navigator.pop(context),
                 ),

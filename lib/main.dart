@@ -6,6 +6,7 @@ import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:digital_khata/core/widgets/connectivity_banner.dart';
 import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:digital_khata/features/onboarding/providers/onboarding_provider.dart';
+import 'package:digital_khata/core/providers/language_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:digital_khata/firebase_options.dart';
@@ -15,6 +16,7 @@ import 'package:digital_khata/core/providers/reminder_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,6 +55,7 @@ void main() async {
   final themeProvider = ThemeProvider(prefs);
   final unitProvider = UnitProvider(prefs);
   final reminderProvider = ReminderProvider(prefs);
+  final languageProvider = LanguageProvider(prefs);
 
   runApp(
     MultiProvider(
@@ -64,6 +67,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => unitProvider),
         ChangeNotifierProvider(create: (context) => OnboardingProvider(prefs)),
         ChangeNotifierProvider(create: (context) => reminderProvider),
+        ChangeNotifierProvider(create: (context) => languageProvider),
       ],
       child: const MyApp(),
     ),
@@ -75,13 +79,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+    return Consumer2<ThemeProvider, LanguageProvider>(
+      builder: (context, themeProvider, languageProvider, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
+          locale: languageProvider.locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: const SplashScreen(),
           builder: (context, child) {
             return Stack(
@@ -96,3 +103,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

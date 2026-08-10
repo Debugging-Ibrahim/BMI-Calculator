@@ -1,5 +1,6 @@
 import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:digital_khata/core/utils/export_helper.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,8 +26,23 @@ class HistoryCard extends StatelessWidget {
     this.targetCalories,
   });
 
+  String _getLocalizedCategory(String cat, AppLocalizations? l10n) {
+    final lower = cat.toLowerCase();
+    if (lower.contains('underweight')) {
+      return l10n?.underweight ?? cat;
+    } else if (lower.contains('normal') || lower.contains('healthy')) {
+      return l10n?.normalWeight ?? cat;
+    } else if (lower.contains('overweight')) {
+      return l10n?.overweight ?? cat;
+    } else if (lower.contains('obese') || lower.contains('obesity')) {
+      return l10n?.obesity ?? cat;
+    }
+    return cat;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final unitProvider = context.watch<UnitProvider>();
@@ -57,6 +73,11 @@ class HistoryCard extends StatelessWidget {
       }
     }
 
+    final localizedCat = _getLocalizedCategory(category, l10n);
+    final heightLabelText = l10n?.heightLabel ?? "Height";
+    final weightLabelText = l10n?.weightLabel ?? "Weight";
+    final calculatedOnText = l10n?.calculatedOn ?? "Calculated on";
+
     return Card(
       color: theme.cardColor,
       elevation: 0,
@@ -77,14 +98,14 @@ class HistoryCard extends StatelessWidget {
           ),
         ),
         title: Text(
-          category,
+          localizedCat,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.onSurface,
           ),
         ),
         subtitle: Text(
-          "Height: $heightDisplay | Weight: $weightDisplay\nCalculated on: $formattedDate",
+          "$heightLabelText: $heightDisplay | $weightLabelText: $weightDisplay\n$calculatedOnText: $formattedDate",
           style: TextStyle(
             fontSize: 12,
             color: isDark ? Colors.white70 : Colors.black54,
@@ -101,6 +122,7 @@ class HistoryCard extends StatelessWidget {
   }
 
   void _showExportOptionsBottomSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -131,7 +153,7 @@ class HistoryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "Share or Export Record",
+                  l10n?.shareOrExportRecord ?? "Share or Export Record",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -142,14 +164,14 @@ class HistoryCard extends StatelessWidget {
                 ListTile(
                   leading: Icon(Icons.share_rounded, color: theme.primaryColor),
                   title: Text(
-                    "Share as Text",
+                    l10n?.shareAsText ?? "Share as Text",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
                   subtitle: Text(
-                    "Share the result as a text message",
+                    l10n?.shareAsTextSub ?? "Share the result as a text message",
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white54 : Colors.black54,
@@ -172,14 +194,14 @@ class HistoryCard extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.picture_as_pdf_rounded, color: Colors.redAccent),
                   title: Text(
-                    "Export as PDF",
+                    l10n?.exportAsPdf ?? "Export as PDF",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
                   subtitle: Text(
-                    "Download or print a formatted PDF report",
+                    l10n?.exportAsPdfSub ?? "Download or print a formatted PDF report",
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white54 : Colors.black54,

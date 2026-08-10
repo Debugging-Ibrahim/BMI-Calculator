@@ -5,12 +5,13 @@ import 'package:digital_khata/features/history/widgets/history_card.dart';
 import 'package:digital_khata/core/utils/export_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
-  List<SectionItem> _buildSectionItems(List<Map<dynamic, dynamic>> filteredList) {
+  List<SectionItem> _buildSectionItems(List<Map<dynamic, dynamic>> filteredList, AppLocalizations? l10n) {
     final now = DateTime.now();
     final sevenDaysAgo = now.subtract(const Duration(days: 7));
     final thirtyDaysAgo = now.subtract(const Duration(days: 30));
@@ -41,22 +42,26 @@ class HistoryScreen extends StatelessWidget {
     }
 
     final items = <SectionItem>[];
+    final title7Days = l10n?.last7Days ?? "Last 7 Days";
+    final title30Days = l10n?.last30Days ?? "Last 30 Days";
+    final titleOlder = l10n?.olderRecords ?? "Older Records";
+
     if (last7Days.isNotEmpty) {
-      items.add(SectionItem(title: "Last 7 Days", isHeader: true));
+      items.add(SectionItem(title: title7Days, isHeader: true));
       for (var r in last7Days) {
-        items.add(SectionItem(title: "Last 7 Days", isHeader: false, record: r));
+        items.add(SectionItem(title: title7Days, isHeader: false, record: r));
       }
     }
     if (last30Days.isNotEmpty) {
-      items.add(SectionItem(title: "Last 30 Days", isHeader: true));
+      items.add(SectionItem(title: title30Days, isHeader: true));
       for (var r in last30Days) {
-        items.add(SectionItem(title: "Last 30 Days", isHeader: false, record: r));
+        items.add(SectionItem(title: title30Days, isHeader: false, record: r));
       }
     }
     if (older.isNotEmpty) {
-      items.add(SectionItem(title: "Older Records", isHeader: true));
+      items.add(SectionItem(title: titleOlder, isHeader: true));
       for (var r in older) {
-        items.add(SectionItem(title: "Older Records", isHeader: false, record: r));
+        items.add(SectionItem(title: titleOlder, isHeader: false, record: r));
       }
     }
 
@@ -65,6 +70,7 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final onSurface = theme.colorScheme.onSurface;
@@ -82,7 +88,7 @@ class HistoryScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.picture_as_pdf_rounded, color: theme.primaryColor, size: 22),
-            tooltip: "Export Full Report",
+            tooltip: l10n?.exportPdfReport ?? "Export Full Report",
             onPressed: () {
               ExportHelper.exportFullHistoryPdf(context.read<BMIProvider>().filteredHistory);
             },
@@ -102,7 +108,7 @@ class HistoryScreen extends StatelessWidget {
           ),
         ],
         title: Text(
-          "History",
+          l10n?.history ?? "History",
           style: TextStyle(color: onSurface, fontWeight: FontWeight.bold),
         ),
       ),
@@ -110,7 +116,7 @@ class HistoryScreen extends StatelessWidget {
         builder: (context, provider, child) {
           final originalHistory = provider.history;
           final filteredHistory = provider.filteredHistory;
-          final sectionItems = _buildSectionItems(filteredHistory);
+          final sectionItems = _buildSectionItems(filteredHistory, l10n);
 
           if (originalHistory.isEmpty) {
             return provider.isLoadingHistory
@@ -123,7 +129,7 @@ class HistoryScreen extends StatelessWidget {
                         height: MediaQuery.of(context).size.height * 0.6,
                         alignment: Alignment.center,
                         child: Text(
-                          "No past calculations found.",
+                          l10n?.noHistoryFound ?? "No past calculations found.",
                           style: TextStyle(
                             fontSize: 18,
                             color: isDark ? Colors.white60 : Colors.black54,
@@ -147,7 +153,7 @@ class HistoryScreen extends StatelessWidget {
                       controller: provider.searchController,
                       style: TextStyle(color: onSurface),
                       decoration: InputDecoration(
-                        hintText: "Search Category or BMI Value...",
+                        hintText: l10n?.searchHint ?? "Search Category or BMI Value...",
                         hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
                         prefixIcon: Icon(
                           Icons.search_rounded,
@@ -193,21 +199,21 @@ class HistoryScreen extends StatelessWidget {
                         children: [
                           _buildFilterChip(
                             context,
-                            "All Time",
+                            l10n?.allTime ?? "All Time",
                             provider.selectedDateRange == "All Time",
                             () => provider.setSelectedDateRange("All Time"),
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
                             context,
-                            "Last 7 Days",
+                            l10n?.last7Days ?? "Last 7 Days",
                             provider.selectedDateRange == "7 Days",
                             () => provider.setSelectedDateRange("7 Days"),
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
                             context,
-                            "Last 30 Days",
+                            l10n?.last30Days ?? "Last 30 Days",
                             provider.selectedDateRange == "30 Days",
                             () => provider.setSelectedDateRange("30 Days"),
                           ),
@@ -223,35 +229,35 @@ class HistoryScreen extends StatelessWidget {
                         children: [
                           _buildFilterChip(
                             context,
-                            "All Categories",
+                            l10n?.allCategories ?? "All Categories",
                             provider.selectedCategory == "All Categories",
                             () => provider.setSelectedCategory("All Categories"),
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
                             context,
-                            "Underweight",
+                            l10n?.underweight ?? "Underweight",
                             provider.selectedCategory == "Underweight",
                             () => provider.setSelectedCategory("Underweight"),
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
                             context,
-                            "Normal",
+                            l10n?.normalWeight ?? "Normal",
                             provider.selectedCategory == "Normal Weight",
                             () => provider.setSelectedCategory("Normal Weight"),
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
                             context,
-                            "Overweight",
+                            l10n?.overweight ?? "Overweight",
                             provider.selectedCategory == "Overweight",
                             () => provider.setSelectedCategory("Overweight"),
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
                             context,
-                            "Obese",
+                            l10n?.obesity ?? "Obese",
                             provider.selectedCategory == "Obesity",
                             () => provider.setSelectedCategory("Obesity"),
                           ),
@@ -276,7 +282,7 @@ class HistoryScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              "No matching records found.",
+                              l10n?.noMatchingRecords ?? "No matching records found.",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: isDark ? Colors.white54 : Colors.black54,
@@ -437,6 +443,7 @@ class HistoryScreen extends StatelessWidget {
   }
 
   Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -457,7 +464,7 @@ class HistoryScreen extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                "Delete Record?",
+                l10n?.deleteRecord ?? "Delete Record?",
                 style: TextStyle(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -466,7 +473,7 @@ class HistoryScreen extends StatelessWidget {
             ],
           ),
           content: Text(
-            "Are you sure you want to delete this BMI calculation record? This action cannot be undone.",
+            l10n?.deleteConfirm ?? "Are you sure you want to delete this BMI calculation record? This action cannot be undone.",
             style: TextStyle(
               color: isDark ? Colors.white70 : Colors.black87,
               fontSize: 14,
@@ -477,7 +484,7 @@ class HistoryScreen extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                "Cancel",
+                l10n?.cancel ?? "Cancel",
                 style: TextStyle(
                   color: isDark ? Colors.white54 : Colors.black54,
                   fontWeight: FontWeight.w600,
@@ -495,9 +502,9 @@ class HistoryScreen extends StatelessWidget {
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
-              child: const Text(
-                "Delete",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              child: Text(
+                l10n?.delete ?? "Delete",
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],

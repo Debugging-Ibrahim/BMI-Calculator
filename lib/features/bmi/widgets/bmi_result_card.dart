@@ -1,4 +1,5 @@
 import 'package:digital_khata/features/bmi/widgets/bmi_gauge_indicator.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BmiResultCard extends StatelessWidget {
@@ -13,10 +14,26 @@ class BmiResultCard extends StatelessWidget {
     required this.categoryColor,
   });
 
+  String _getLocalizedCategory(String cat, AppLocalizations? l10n) {
+    final lower = cat.toLowerCase();
+    if (lower.contains('underweight')) {
+      return l10n?.underweight ?? cat;
+    } else if (lower.contains('normal') || lower.contains('healthy')) {
+      return l10n?.normalWeight ?? cat;
+    } else if (lower.contains('overweight')) {
+      return l10n?.overweight ?? cat;
+    } else if (lower.contains('obese') || lower.contains('obesity')) {
+      return l10n?.obesity ?? cat;
+    }
+    return cat;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final localizedCat = _getLocalizedCategory(category, l10n);
 
     return Container(
       padding: const EdgeInsets.all(20.0),
@@ -30,7 +47,7 @@ class BmiResultCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Your BMI is",
+                l10n?.yourBmiIs ?? "Your BMI is",
                 style: TextStyle(
                   fontSize: 16,
                   color: isDark ? Colors.white70 : Colors.black54,
@@ -38,7 +55,7 @@ class BmiResultCard extends StatelessWidget {
                 ),
               ),
               Text(
-                category,
+                localizedCat,
                 style: TextStyle(
                   fontSize: 16,
                   color: categoryColor,

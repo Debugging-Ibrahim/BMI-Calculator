@@ -1,4 +1,5 @@
 import 'package:digital_khata/features/bmi/services/meal_plan_service.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,6 +27,7 @@ class MealPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final onSurface = theme.colorScheme.onSurface;
@@ -77,7 +79,7 @@ class MealPlanCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '${meal.readyInMinutes} min',
+                  '${meal.readyInMinutes} ${l10n?.min ?? "min"}',
                   style: TextStyle(
                     color: isDark ? Colors.white60 : Colors.black54,
                     fontSize: 13,
@@ -91,7 +93,7 @@ class MealPlanCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '${meal.servings} servings',
+                  '${meal.servings} ${l10n?.servings ?? "servings"}',
                   style: TextStyle(
                     color: isDark ? Colors.white60 : Colors.black54,
                     fontSize: 13,
@@ -106,7 +108,7 @@ class MealPlanCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'View Recipe',
+                          l10n?.viewRecipe ?? 'View Recipe',
                           style: TextStyle(
                             color: theme.primaryColor,
                             fontSize: 13,

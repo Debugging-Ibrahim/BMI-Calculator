@@ -8,6 +8,7 @@ import 'package:digital_khata/features/bmi/widgets/weight_age_container.dart';
 import 'package:digital_khata/core/providers/unit_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
@@ -109,6 +110,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -136,7 +138,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ),
         ],
         title: Text(
-          "BMI Calculator",
+          l10n?.bmiCalculator ?? "BMI Calculator",
           style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold),
         ),
       ),
@@ -218,13 +220,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GenderSelectionCard(
-                    gender: 'Male',
+                    gender: l10n?.male ?? 'Male',
                     isSelected: _selectedGender == 'Male',
                     icon: Iconsax.man,
                     onTap: () => setState(() => _selectedGender = 'Male'),
                   ),
                   GenderSelectionCard(
-                    gender: 'Female',
+                    gender: l10n?.female ?? 'Female',
                     isSelected: _selectedGender == 'Female',
                     icon: Iconsax.woman,
                     onTap: () => setState(() => _selectedGender = 'Female'),
@@ -271,8 +273,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   WeightAgeContainer(
-                    textUp: 'Weight',
-                    textBtm: context.watch<UnitProvider>().isImperial ? 'lbs' : 'kg',
+                    textUp: l10n?.weight ?? 'Weight',
+                    textBtm: context.watch<UnitProvider>().isImperial
+                        ? (l10n?.lbs ?? 'lbs')
+                        : (l10n?.kg ?? 'kg'),
                     value: _weight,
                     onIncrement: () {
                       setState(() {
@@ -286,8 +290,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     },
                   ),
                   WeightAgeContainer(
-                    textUp: 'Age',
-                    textBtm: 'Year',
+                    textUp: l10n?.age ?? 'Age',
+                    textBtm: '',
                     value: _age,
                     onIncrement: () {
                       setState(() {
@@ -305,7 +309,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               const SizedBox(height: 25),
 
               ReUsableButton(
-                text: 'Calculate',
+                text: l10n?.calculateBmi ?? 'Calculate BMI',
                 icon: Iconsax.repeat_circle,
                 onTap: _calculateAndNavigate,
               ),

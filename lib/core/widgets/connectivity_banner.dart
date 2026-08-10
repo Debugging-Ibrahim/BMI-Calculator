@@ -1,5 +1,6 @@
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class ConnectivityBanner extends StatelessWidget {
@@ -7,6 +8,7 @@ class ConnectivityBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isOffline = context.watch<ConnectivityProvider>().isOffline;
@@ -47,7 +49,7 @@ class ConnectivityBanner extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  "No Internet Connection",
+                  l10n?.noInternetConnection ?? "No Internet Connection",
                   style: TextStyle(
                     color: isDark ? Colors.white : const Color(0xff9b1c1c),
                     fontSize: 14,

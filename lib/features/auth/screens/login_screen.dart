@@ -8,6 +8,7 @@ import 'package:digital_khata/core/providers/connectivity_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:digital_khata/theme/theme_provider.dart';
@@ -182,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -193,9 +195,9 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AuthHeader(
-                title: "Welcome back",
-                subtitle: "Sign in to continue tracking your health",
+              AuthHeader(
+                title: l10n?.login ?? "Welcome back",
+                subtitle: l10n?.appTitle ?? "Sign in to continue tracking your health",
               ),
 
               const SizedBox(height: 40),
@@ -207,17 +209,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Email
                     AuthTextField(
                       controller: _emailController,
-                      label: "Email",
+                      label: l10n?.email ?? "Email",
                       hint: "you@example.com",
                       icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return l10n?.invalidEmail ?? 'Please enter your email';
                         }
                         if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                             .hasMatch(value)) {
-                          return 'Enter a valid email address';
+                          return l10n?.invalidEmail ?? 'Enter a valid email address';
                         }
                         return null;
                       },
@@ -227,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Password
                     AuthTextField(
                       controller: _passwordController,
-                      label: "Password",
+                      label: l10n?.password ?? "Password",
                       hint: "••••••••",
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
@@ -244,10 +246,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return l10n?.passwordTooShort ?? 'Please enter your password';
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return l10n?.passwordTooShort ?? 'Password must be at least 6 characters';
                         }
                         return null;
                       },
@@ -268,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: Text(
-                          "Forgot password?",
+                          l10n?.forgotPassword ?? "Forgot password?",
                           style: TextStyle(
                             color: theme.primaryColor,
                             fontSize: 13,
@@ -282,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     // Login Button
                     AuthButton(
-                      text: "Sign In",
+                      text: l10n?.login ?? "Sign In",
                       onTap: _login,
                       isLoading: _isLoading,
                     ),
@@ -329,9 +331,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     'assets/google_logo.png',
                     height: 20,
                   ),
-                  label: const Text(
-                    "Sign in with Google",
-                    style: TextStyle(
+                  label: Text(
+                    "${l10n?.orContinueWith ?? 'Sign in with'} Google",
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -346,7 +348,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    "${l10n?.dontHaveAccount ?? "Don't have an account?"} ",
                     style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 14),
                   ),
                   GestureDetector(
@@ -359,7 +361,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                     child: Text(
-                      "Create Account",
+                      l10n?.signup ?? "Create Account",
                       style: TextStyle(
                         color: theme.primaryColor,
                         fontSize: 14,
