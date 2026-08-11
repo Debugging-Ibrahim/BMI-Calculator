@@ -1,4 +1,5 @@
 import 'package:digital_khata/core/providers/unit_provider.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +8,7 @@ class OnboardingUnitSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -44,7 +46,7 @@ class OnboardingUnitSelection extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Metric System",
+                            l10n?.metricSystem ?? "Metric System",
                             style: TextStyle(
                               color: isDark ? Colors.white : Colors.black,
                               fontSize: 16,
@@ -53,7 +55,7 @@ class OnboardingUnitSelection extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Kilograms (kg) & Centimeters (cm)",
+                            l10n?.metricUnits ?? "Kilograms (kg) & Centimeters (cm)",
                             style: TextStyle(
                               color: isDark ? Colors.white54 : Colors.black54,
                               fontSize: 12,
@@ -102,7 +104,7 @@ class OnboardingUnitSelection extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Imperial System",
+                            l10n?.imperialSystem ?? "Imperial System",
                             style: TextStyle(
                               color: isDark ? Colors.white : Colors.black,
                               fontSize: 16,
@@ -111,7 +113,7 @@ class OnboardingUnitSelection extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Pounds (lbs) & Feet/Inches (ft/in)",
+                            l10n?.imperialUnits ?? "Pounds (lbs) & Feet/Inches (ft/in)",
                             style: TextStyle(
                               color: isDark ? Colors.white54 : Colors.black54,
                               fontSize: 12,
@@ -132,7 +134,7 @@ class OnboardingUnitSelection extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              "Your preferred measurement system",
+              l10n?.preferredUnitSystem ?? "Your preferred measurement system",
               style: TextStyle(
                 color: isDark ? Colors.white30 : Colors.black38,
                 fontSize: 12,

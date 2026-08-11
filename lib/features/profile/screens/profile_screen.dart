@@ -398,7 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Name input
                       AuthTextField(
                         controller: _nameController,
-                        label: "Full Name",
+                        label: l10n?.fullName ?? "Full Name",
                         hint: "Your Name",
                         icon: Icons.person_outline_rounded,
                         keyboardType: TextInputType.name,
@@ -416,7 +416,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Email Address",
+                            l10n?.email ?? "Email Address",
                             style: TextStyle(
                               color: isDark ? Colors.white54 : Colors.black54,
                               fontSize: 13,
@@ -455,7 +455,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Expanded(
                             child: AuthTextField(
                               controller: _ageController,
-                              label: "Age",
+                              label: l10n?.age ?? "Age",
                               hint: "25",
                               icon: Icons.cake_outlined,
                               keyboardType: TextInputType.number,
@@ -479,7 +479,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Gender",
+                                  l10n?.selectGender ?? "Gender",
                                   style: TextStyle(
                                     color: isDark ? Colors.white70 : Colors.black54,
                                     fontSize: 13,
@@ -503,14 +503,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         color: onSurface,
                                         fontSize: 14,
                                       ),
-                                      items: const [
+                                      items: [
                                         DropdownMenuItem(
                                           value: 'Male',
-                                          child: Text('Male'),
+                                          child: Text(l10n?.male ?? 'Male'),
                                         ),
                                         DropdownMenuItem(
                                           value: 'Female',
-                                          child: Text('Female'),
+                                          child: Text(l10n?.female ?? 'Female'),
                                         ),
                                       ],
                                       onChanged: (val) {

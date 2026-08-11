@@ -1,3 +1,4 @@
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class DailyStatsRow extends StatelessWidget {
@@ -14,6 +15,8 @@ class DailyStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Row(
       children: [
         Expanded(
@@ -32,7 +35,7 @@ class DailyStatsRow extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: _StatCard(
-            title: 'Target',
+            title: l10n?.targetCaloriesLabel ?? 'Target',
             value: '${targetCalories?.toStringAsFixed(0) ?? "0"} kcal',
             isHighlight: true,
           ),

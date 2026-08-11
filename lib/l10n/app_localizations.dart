@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Digital Khata - BMI Calculator'**
+  /// **'Kinetik - BMI Calculator'**
   String get appTitle;
 
   /// No description provided for @bmiCalculator.
@@ -176,6 +176,36 @@ abstract class AppLocalizations {
   /// **'Loading...'**
   String get loading;
 
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
   /// No description provided for @login.
   ///
   /// In en, this message translates to:
@@ -187,6 +217,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign Up'**
   String get signup;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @createAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in the details below to get started'**
+  String get createAccountSubtitle;
 
   /// No description provided for @email.
   ///
@@ -211,6 +253,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Forgot Password?'**
   String get forgotPassword;
+
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t worry, enter your email below to receive a secure password reset link.'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @confirmPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the reset code sent to your email and choose your new password.'**
+  String get confirmPasswordSubtitle;
+
+  /// No description provided for @resetCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Code'**
+  String get resetCode;
+
+  /// No description provided for @resetCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the code from the email link'**
+  String get resetCodeHint;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
 
   /// No description provided for @resetPassword.
   ///
@@ -260,6 +332,12 @@ abstract class AppLocalizations {
   /// **'Password reset link sent to your email!'**
   String get passwordResetSent;
 
+  /// No description provided for @passwordResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully! You can now log in.'**
+  String get passwordResetSuccess;
+
   /// No description provided for @invalidEmail.
   ///
   /// In en, this message translates to:
@@ -278,10 +356,28 @@ abstract class AppLocalizations {
   /// **'Passwords do not match'**
   String get passwordsDoNotMatch;
 
+  /// No description provided for @enterValidName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get enterValidName;
+
+  /// No description provided for @nameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get nameTooShort;
+
+  /// No description provided for @enterValidAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid age'**
+  String get enterValidAge;
+
   /// No description provided for @selectGender.
   ///
   /// In en, this message translates to:
-  /// **'Select Gender'**
+  /// **'Gender'**
   String get selectGender;
 
   /// No description provided for @male.
@@ -505,6 +601,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Calories'**
   String get calories;
+
+  /// No description provided for @bmrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BMR'**
+  String get bmrLabel;
+
+  /// No description provided for @tdeeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TDEE'**
+  String get tdeeLabel;
+
+  /// No description provided for @targetCaloriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get targetCaloriesLabel;
 
   /// No description provided for @breakfast.
   ///
@@ -793,6 +907,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'It\'s time to measure and record your BMI today!'**
   String get reminderBody;
+
+  /// No description provided for @onboardingTitle1.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Kinetik'**
+  String get onboardingTitle1;
+
+  /// No description provided for @onboardingDesc1.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor your body mass index, analyze trends chronologically, and take control of your health journey.'**
+  String get onboardingDesc1;
+
+  /// No description provided for @onboardingTitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore BMI Classifications'**
+  String get onboardingTitle2;
+
+  /// No description provided for @onboardingDesc2.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn how weight classes correspond to health metrics and understand your target ranges.'**
+  String get onboardingDesc2;
+
+  /// No description provided for @onboardingTitle3.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Measurement Units'**
+  String get onboardingTitle3;
+
+  /// No description provided for @onboardingDesc3.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred unit standard. This setting automatically configures all future inputs.'**
+  String get onboardingDesc3;
+
+  /// No description provided for @onboardingTitle4.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe Cloud Synchronization'**
+  String get onboardingTitle4;
+
+  /// No description provided for @onboardingDesc4.
+  ///
+  /// In en, this message translates to:
+  /// **'Access and sync logs securely across all your devices, with local offline fallback options.'**
+  String get onboardingDesc4;
+
+  /// No description provided for @metricSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric System'**
+  String get metricSystem;
+
+  /// No description provided for @metricUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilograms (kg) & Centimeters (cm)'**
+  String get metricUnits;
+
+  /// No description provided for @imperialSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial System'**
+  String get imperialSystem;
+
+  /// No description provided for @imperialUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Pounds (lbs) & Feet/Inches (ft/in)'**
+  String get imperialUnits;
+
+  /// No description provided for @preferredUnitSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Your preferred measurement system'**
+  String get preferredUnitSystem;
+
+  /// No description provided for @dragSliderPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the slider to preview the BMI scale'**
+  String get dragSliderPreview;
 }
 
 class _AppLocalizationsDelegate

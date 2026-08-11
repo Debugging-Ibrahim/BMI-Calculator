@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:digital_khata/features/onboarding/providers/onboarding_provider.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +9,7 @@ class BmiZoneExplorer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -15,26 +17,26 @@ class BmiZoneExplorer extends StatelessWidget {
       builder: (context, provider, child) {
         final sliderValue = provider.sliderValue;
 
-        String categoryName = "Normal Weight";
+        String categoryName = l10n?.normalWeight ?? "Normal Weight";
         Color categoryColor = Colors.greenAccent;
-        String categoryDescription = "You have a healthy body weight. Maintain this with a balanced diet and regular activity!";
+        String categoryDescription = l10n?.normalWeightAdvice ?? "You have a healthy body weight. Maintain this with a balanced diet and regular activity!";
 
         if (sliderValue < 18.5) {
-          categoryName = "Underweight";
+          categoryName = l10n?.underweight ?? "Underweight";
           categoryColor = const Color(0xffdafd87);
-          categoryDescription = "Below healthy range. Consider consulting a nutritionist to build healthy muscle mass.";
+          categoryDescription = l10n?.underweightAdvice ?? "Below healthy range. Consider consulting a nutritionist to build healthy muscle mass.";
         } else if (sliderValue < 25.0) {
-          categoryName = "Normal Weight";
+          categoryName = l10n?.normalWeight ?? "Normal Weight";
           categoryColor = const Color(0xff7ca613); // Harmonious premium green
-          categoryDescription = "Great job! You are in the healthy range. Keep up your active lifestyle.";
+          categoryDescription = l10n?.normalWeightAdvice ?? "Great job! You are in the healthy range. Keep up your active lifestyle.";
         } else if (sliderValue < 30.0) {
-          categoryName = "Overweight";
+          categoryName = l10n?.overweight ?? "Overweight";
           categoryColor = Colors.orangeAccent;
-          categoryDescription = "Slightly above healthy range. A balanced caloric intake can help you return to normal range.";
+          categoryDescription = l10n?.overweightAdvice ?? "Slightly above healthy range. A balanced caloric intake can help you return to normal range.";
         } else {
-          categoryName = "Obesity";
+          categoryName = l10n?.obesity ?? "Obesity";
           categoryColor = Colors.redAccent;
-          categoryDescription = "Significantly above healthy range. Focus on nutrient-rich whole foods and daily movement.";
+          categoryDescription = l10n?.obesityAdvice ?? "Significantly above healthy range. Focus on nutrient-rich whole foods and daily movement.";
         }
 
         // Accessibility Category Text Color (especially for Underweight in Light Mode)
@@ -155,7 +157,7 @@ class BmiZoneExplorer extends StatelessWidget {
               ),
             ),
             Text(
-              "Drag the slider to preview the BMI scale",
+              l10n?.dragSliderPreview ?? "Drag the slider to preview the BMI scale",
               style: TextStyle(
                 color: isDark ? Colors.white30 : Colors.black38,
                 fontSize: 12,

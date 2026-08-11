@@ -3,6 +3,7 @@ import 'package:digital_khata/features/auth/widgets/auth_header.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/features/auth/screens/confirm_password_screen.dart';
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,13 +27,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void _submit() async {
+    final l10n = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       // Check connectivity first
       final connectivity = Provider.of<ConnectivityProvider>(context, listen: false);
       if (connectivity.isOffline) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("No internet connection. Please verify your connection and try again."),
+          SnackBar(
+            content: Text(l10n?.noInternetConnection ?? "No internet connection. Please verify your connection and try again."),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -45,6 +47,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
         if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n?.passwordResetSent ?? "Password reset link sent to your email!"),
+              backgroundColor: Colors.green,
+            ),
+          );
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -57,7 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         if (e.code == 'user-not-found') {
           message = 'No user found for that email.';
         } else if (e.code == 'invalid-email') {
-          message = 'Invalid email address.';
+          message = l10n?.invalidEmail ?? 'Invalid email address.';
         } else {
           message = e.message ?? message;
         }
@@ -88,6 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -98,9 +107,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AuthHeader(
-                title: "Forgot Password",
-                subtitle: "Don't worry, enter your email below to receive a secure password reset link.",
+              AuthHeader(
+                title: l10n?.forgotPassword ?? "Forgot Password",
+                subtitle: l10n?.forgotPasswordSubtitle ?? "Don't worry, enter your email below to receive a secure password reset link.",
                 showBackButton: true,
               ),
               const SizedBox(height: 40),
@@ -110,24 +119,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   children: [
                     AuthTextField(
                       controller: _emailController,
-                      label: "Email Address",
+                      label: l10n?.email ?? "Email Address",
                       hint: "you@example.com",
                       icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return l10n?.invalidEmail ?? 'Please enter your email';
                         }
                         if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                             .hasMatch(value)) {
-                          return 'Enter a valid email address';
+                          return l10n?.invalidEmail ?? 'Enter a valid email address';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 32),
                     AuthButton(
-                      text: "Submit",
+                      text: l10n?.submit ?? "Submit",
                       onTap: _submit,
                       isLoading: _isLoading,
                     ),

@@ -5,6 +5,7 @@ import 'package:digital_khata/features/auth/widgets/auth_header.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/core/screens/home_screen.dart';
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,12 +39,13 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _signup() async {
+    final l10n = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       final connectivity = Provider.of<ConnectivityProvider>(context, listen: false);
       if (connectivity.isOffline) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("No internet connection. Please verify your connection and try again."),
+          SnackBar(
+            content: Text(l10n?.noInternetConnection ?? "No internet connection. Please verify your connection and try again."),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -89,11 +91,11 @@ class _SignupScreenState extends State<SignupScreen> {
       } on FirebaseAuthException catch (e) {
         String message = 'An error occurred. Please try again.';
         if (e.code == 'weak-password') {
-          message = 'The password provided is too weak.';
+          message = l10n?.passwordTooShort ?? 'The password provided is too weak.';
         } else if (e.code == 'email-already-in-use') {
           message = 'The account already exists for that email.';
         } else if (e.code == 'invalid-email') {
-          message = 'Invalid email address.';
+          message = l10n?.invalidEmail ?? 'Invalid email address.';
         } else {
           message = e.message ?? message;
         }
@@ -124,6 +126,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -135,9 +138,9 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AuthHeader(
-                title: "Create Account",
-                subtitle: "Fill in the details below to get started",
+              AuthHeader(
+                title: l10n?.createAccount ?? "Create Account",
+                subtitle: l10n?.createAccountSubtitle ?? "Fill in the details below to get started",
                 showBackButton: true,
               ),
 
@@ -150,15 +153,15 @@ class _SignupScreenState extends State<SignupScreen> {
                     // Full Name
                     AuthTextField(
                       controller: _nameController,
-                      label: "Full Name",
+                      label: l10n?.fullName ?? "Full Name",
                       hint: "John Doe",
                       icon: Icons.person_outline_rounded,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your name';
+                          return l10n?.enterValidName ?? 'Please enter your name';
                         }
                         if (value.trim().length < 2) {
-                          return 'Name must be at least 2 characters';
+                          return l10n?.nameTooShort ?? 'Name must be at least 2 characters';
                         }
                         return null;
                       },
@@ -168,17 +171,17 @@ class _SignupScreenState extends State<SignupScreen> {
                     // Email
                     AuthTextField(
                       controller: _emailController,
-                      label: "Email",
+                      label: l10n?.email ?? "Email",
                       hint: "you@example.com",
                       icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return l10n?.invalidEmail ?? 'Please enter your email';
                         }
                         if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                             .hasMatch(value)) {
-                          return 'Enter a valid email address';
+                          return l10n?.invalidEmail ?? 'Enter a valid email address';
                         }
                         return null;
                       },
@@ -188,7 +191,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     // Password
                     AuthTextField(
                       controller: _passwordController,
-                      label: "Password",
+                      label: l10n?.password ?? "Password",
                       hint: "••••••••",
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
@@ -205,10 +208,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a password';
+                          return l10n?.passwordTooShort ?? 'Please enter a password';
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return l10n?.passwordTooShort ?? 'Password must be at least 6 characters';
                         }
                         return null;
                       },
@@ -223,7 +226,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         Expanded(
                           child: AuthTextField(
                             controller: _ageController,
-                            label: "Age",
+                            label: l10n?.age ?? "Age",
                             hint: "25",
                             icon: Icons.cake_outlined,
                             keyboardType: TextInputType.number,
@@ -232,9 +235,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                 return 'Required';
                               }
                               final age = int.tryParse(value);
-                              if (age == null) return 'Invalid age';
+                              if (age == null) return l10n?.enterValidAge ?? 'Invalid age';
                               if (age < 5 || age > 120) {
-                                return 'Enter valid age';
+                                return l10n?.enterValidAge ?? 'Enter valid age';
                               }
                               return null;
                             },
@@ -248,7 +251,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Gender",
+                                l10n?.selectGender ?? "Gender",
                                 style: TextStyle(
                                   color: isDark ? Colors.white70 : Colors.black54,
                                   fontSize: 13,
@@ -273,14 +276,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                       color: theme.colorScheme.onSurface,
                                       fontSize: 14,
                                     ),
-                                    items: const [
+                                    items: [
                                       DropdownMenuItem(
                                         value: 'Male',
-                                        child: Text('Male'),
+                                        child: Text(l10n?.male ?? 'Male'),
                                       ),
                                       DropdownMenuItem(
                                         value: 'Female',
-                                        child: Text('Female'),
+                                        child: Text(l10n?.female ?? 'Female'),
                                       ),
                                     ],
                                     onChanged: (val) {
@@ -302,7 +305,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     // Sign Up Button
                     AuthButton(
-                      text: "Create Account",
+                      text: l10n?.createAccount ?? "Create Account",
                       onTap: _signup,
                       isLoading: _isLoading,
                     ),
@@ -317,7 +320,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Already have an account? ",
+                    "${l10n?.alreadyHaveAccount ?? "Already have an account?"} ",
                     style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 14),
                   ),
                   GestureDetector(
@@ -330,7 +333,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       );
                     },
                     child: Text(
-                      "Sign In",
+                      l10n?.login ?? "Sign In",
                       style: TextStyle(
                         color: theme.primaryColor,
                         fontSize: 14,

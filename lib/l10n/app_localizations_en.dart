@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Digital Khata - BMI Calculator';
+  String get appTitle => 'Kinetik - BMI Calculator';
 
   @override
   String get bmiCalculator => 'BMI Calculator';
@@ -48,10 +48,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loading => 'Loading...';
 
   @override
+  String get submit => 'Submit';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
   String get login => 'Login';
 
   @override
   String get signup => 'Sign Up';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get createAccountSubtitle =>
+      'Fill in the details below to get started';
 
   @override
   String get email => 'Email Address';
@@ -64,6 +86,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Don\'t worry, enter your email below to receive a secure password reset link.';
+
+  @override
+  String get confirmPasswordSubtitle =>
+      'Enter the reset code sent to your email and choose your new password.';
+
+  @override
+  String get resetCode => 'Reset Code';
+
+  @override
+  String get resetCodeHint => 'Paste the code from the email link';
+
+  @override
+  String get newPassword => 'New Password';
 
   @override
   String get resetPassword => 'Reset Password';
@@ -90,6 +129,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordResetSent => 'Password reset link sent to your email!';
 
   @override
+  String get passwordResetSuccess =>
+      'Password reset successfully! You can now log in.';
+
+  @override
   String get invalidEmail => 'Please enter a valid email address';
 
   @override
@@ -99,7 +142,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordsDoNotMatch => 'Passwords do not match';
 
   @override
-  String get selectGender => 'Select Gender';
+  String get enterValidName => 'Please enter your name';
+
+  @override
+  String get nameTooShort => 'Name must be at least 2 characters';
+
+  @override
+  String get enterValidAge => 'Enter a valid age';
+
+  @override
+  String get selectGender => 'Gender';
 
   @override
   String get male => 'Male';
@@ -217,6 +269,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calories => 'Calories';
+
+  @override
+  String get bmrLabel => 'BMR';
+
+  @override
+  String get tdeeLabel => 'TDEE';
+
+  @override
+  String get targetCaloriesLabel => 'Target';
 
   @override
   String get breakfast => 'Meal 1: Breakfast';
@@ -362,4 +423,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderBody => 'It\'s time to measure and record your BMI today!';
+
+  @override
+  String get onboardingTitle1 => 'Welcome to Kinetik';
+
+  @override
+  String get onboardingDesc1 =>
+      'Monitor your body mass index, analyze trends chronologically, and take control of your health journey.';
+
+  @override
+  String get onboardingTitle2 => 'Explore BMI Classifications';
+
+  @override
+  String get onboardingDesc2 =>
+      'Learn how weight classes correspond to health metrics and understand your target ranges.';
+
+  @override
+  String get onboardingTitle3 => 'Select Measurement Units';
+
+  @override
+  String get onboardingDesc3 =>
+      'Choose your preferred unit standard. This setting automatically configures all future inputs.';
+
+  @override
+  String get onboardingTitle4 => 'Safe Cloud Synchronization';
+
+  @override
+  String get onboardingDesc4 =>
+      'Access and sync logs securely across all your devices, with local offline fallback options.';
+
+  @override
+  String get metricSystem => 'Metric System';
+
+  @override
+  String get metricUnits => 'Kilograms (kg) & Centimeters (cm)';
+
+  @override
+  String get imperialSystem => 'Imperial System';
+
+  @override
+  String get imperialUnits => 'Pounds (lbs) & Feet/Inches (ft/in)';
+
+  @override
+  String get preferredUnitSystem => 'Your preferred measurement system';
+
+  @override
+  String get dragSliderPreview => 'Drag the slider to preview the BMI scale';
 }

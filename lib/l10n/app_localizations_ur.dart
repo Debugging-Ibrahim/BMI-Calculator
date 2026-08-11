@@ -9,7 +9,7 @@ class AppLocalizationsUr extends AppLocalizations {
   AppLocalizationsUr([String locale = 'ur']) : super(locale);
 
   @override
-  String get appTitle => 'ڈیجیٹل کھاتہ - بی ایم آئی کیلکولیٹر';
+  String get appTitle => 'کائنیٹک - بی ایم آئی کیلکولیٹر';
 
   @override
   String get bmiCalculator => 'بی ایم آئی کیلکولیٹر';
@@ -48,10 +48,32 @@ class AppLocalizationsUr extends AppLocalizations {
   String get loading => 'لوڈ ہو رہا ہے...';
 
   @override
+  String get submit => 'ارسال کریں';
+
+  @override
+  String get confirm => 'تصدیق کریں';
+
+  @override
+  String get skip => 'چھوڑیں';
+
+  @override
+  String get next => 'آگے';
+
+  @override
+  String get getStarted => 'شروع کریں';
+
+  @override
   String get login => 'لاگ ان کریں';
 
   @override
   String get signup => 'سائن اپ کریں';
+
+  @override
+  String get createAccount => 'نیا اکاؤنٹ بنائیں';
+
+  @override
+  String get createAccountSubtitle =>
+      'شروع کرنے کے لیے ذیل میں اپنی تفصیلات درج کریں';
 
   @override
   String get email => 'ای میل ایڈریس';
@@ -64,6 +86,23 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get forgotPassword => 'پاس ورڈ بھول گئے؟';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'فکرمند نہ ہوں، اپنا پاس ورڈ ری سیٹ کرنے کا محفوظ لنک حاصل کرنے کے لیے ای میل درج کریں۔';
+
+  @override
+  String get confirmPasswordSubtitle =>
+      'اپنی ای میل پر بھیجا گیا کوڈ درج کریں اور نیا پاس ورڈ منتخب کریں۔';
+
+  @override
+  String get resetCode => 'ری سیٹ کوڈ';
+
+  @override
+  String get resetCodeHint => 'ای میل لنک سے ری سیٹ کوڈ درج کریں';
+
+  @override
+  String get newPassword => 'نیا پاس ورڈ';
 
   @override
   String get resetPassword => 'پاس ورڈ ری سیٹ کریں';
@@ -91,6 +130,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'پاس ورڈ ری سیٹ لنک آپ کی ای میل پر بھیج دیا گیا ہے!';
 
   @override
+  String get passwordResetSuccess =>
+      'پاس ورڈ کامیابی سے ری سیٹ ہو گیا! اب آپ لاگ ان کر سکتے ہیں۔';
+
+  @override
   String get invalidEmail => 'براہ کرم درست ای میل درج کریں';
 
   @override
@@ -100,7 +143,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get passwordsDoNotMatch => 'پاس ورڈ میچ نہیں کر رہے';
 
   @override
-  String get selectGender => 'جنس منتخب کریں';
+  String get enterValidName => 'براہ کرم اپنا نام درج کریں';
+
+  @override
+  String get nameTooShort => 'نام کم از کم 2 حروف کا ہونا چاہیے';
+
+  @override
+  String get enterValidAge => 'درست عمر درج کریں';
+
+  @override
+  String get selectGender => 'جنس';
 
   @override
   String get male => 'مرد';
@@ -218,6 +270,15 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get calories => 'کیلوریز';
+
+  @override
+  String get bmrLabel => 'بی ایم آر (BMR)';
+
+  @override
+  String get tdeeLabel => 'ٹی ڈی ای ای (TDEE)';
+
+  @override
+  String get targetCaloriesLabel => 'ہدف';
 
   @override
   String get breakfast => 'کھانا 1: ناشتہ';
@@ -364,4 +425,51 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get reminderBody =>
       'آج اپنا بی ایم آئی ناپنے اور ریکارڈ کرنے کا وقت ہو گیا ہے!';
+
+  @override
+  String get onboardingTitle1 => 'کائنیٹک بی ایم آئی میں خوش آمدید';
+
+  @override
+  String get onboardingDesc1 =>
+      'اپنے باڈی ماس انڈیکس کو ٹریک کریں، رجحانات کا تجزیہ کریں اور اپنی صحت کا خیال رکھیں۔';
+
+  @override
+  String get onboardingTitle2 => 'بی ایم آئی کے درجات دریافت کریں';
+
+  @override
+  String get onboardingDesc2 =>
+      'معلوم کریں کہ وزن کی اقسام صحت کی پیمائش کے ساتھ کیسے ملتی ہیں۔';
+
+  @override
+  String get onboardingTitle3 => 'پیمائش کے یونٹس منتخب کریں';
+
+  @override
+  String get onboardingDesc3 =>
+      'اپنا پسندیدہ معیاری یونٹ منتخب کریں۔ یہ سیٹنگ خود بخود تمام ان پٹس کو کنفیگر کر دے گی۔';
+
+  @override
+  String get onboardingTitle4 => 'محفوظ کلاؤڈ سنکرونائزیشن';
+
+  @override
+  String get onboardingDesc4 =>
+      'تمام آلات پر اپنے لاگز محفوظ طریقے سے سنک کریں اور آف لائن رسائی حاصل کریں۔';
+
+  @override
+  String get metricSystem => 'میٹرک سسٹم';
+
+  @override
+  String get metricUnits => 'کلوگرام (kg) اور سینٹی میٹر (cm)';
+
+  @override
+  String get imperialSystem => 'امپیریل سسٹم';
+
+  @override
+  String get imperialUnits => 'پاؤنڈ (lbs) اور فٹ/انچ (ft/in)';
+
+  @override
+  String get preferredUnitSystem => 'آپ کا پسندیدہ پیمائشی نظام';
+
+  @override
+  String get dragSliderPreview =>
+      'بی ایم آئی کا اندازہ لگانے کے لیے سلائیڈر گھسیٹیں';
 }

@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
-        android:label="bmi_calculator"
+        android:label="Kinetik"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

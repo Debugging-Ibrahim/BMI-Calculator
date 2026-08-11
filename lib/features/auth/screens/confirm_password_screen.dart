@@ -2,6 +2,7 @@ import 'package:digital_khata/features/auth/widgets/auth_button.dart';
 import 'package:digital_khata/features/auth/widgets/auth_header.dart';
 import 'package:digital_khata/features/auth/widgets/auth_text_field.dart';
 import 'package:digital_khata/core/providers/connectivity_provider.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,12 +34,13 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   }
 
   void _confirm() async {
+    final l10n = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       final connectivity = Provider.of<ConnectivityProvider>(context, listen: false);
       if (connectivity.isOffline) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("No internet connection. Please verify your connection and try again."),
+          SnackBar(
+            content: Text(l10n?.noInternetConnection ?? "No internet connection. Please verify your connection and try again."),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -54,8 +56,8 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Password reset successfully! You can now log in."),
+            SnackBar(
+              content: Text(l10n?.passwordResetSuccess ?? "Password reset successfully! You can now log in."),
               backgroundColor: Colors.green,
             ),
           );
@@ -72,7 +74,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
         } else if (e.code == 'user-not-found') {
           message = 'User corresponding to this code was not found.';
         } else if (e.code == 'weak-password') {
-          message = 'The new password is too weak.';
+          message = l10n?.passwordTooShort ?? 'The new password is too weak.';
         } else {
           message = e.message ?? message;
         }
@@ -103,6 +105,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -115,8 +118,8 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AuthHeader(
-                title: "Confirm Password",
-                subtitle: "Enter the reset code sent to your email and choose your new password.",
+                title: l10n?.confirmPassword ?? "Confirm Password",
+                subtitle: l10n?.confirmPasswordSubtitle ?? "Enter the reset code sent to your email and choose your new password.",
                 showBackButton: true,
               ),
               const SizedBox(height: 40),
@@ -127,8 +130,8 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                     // Verification Code
                     AuthTextField(
                       controller: _codeController,
-                      label: "Reset Code",
-                      hint: "Paste the oobCode from the email link",
+                      label: l10n?.resetCode ?? "Reset Code",
+                      hint: l10n?.resetCodeHint ?? "Paste the code from the email link",
                       icon: Icons.vpn_key_outlined,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -142,7 +145,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                     // New Password
                     AuthTextField(
                       controller: _passwordController,
-                      label: "New Password",
+                      label: l10n?.newPassword ?? "New Password",
                       hint: "••••••••",
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
@@ -159,10 +162,10 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return l10n?.passwordTooShort ?? 'Please enter your password';
                         }
                         if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return l10n?.passwordTooShort ?? 'Password must be at least 6 characters';
                         }
                         return null;
                       },
@@ -172,7 +175,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                     // Confirm Password
                     AuthTextField(
                       controller: _confirmPasswordController,
-                      label: "Confirm Password",
+                      label: l10n?.confirmPassword ?? "Confirm Password",
                       hint: "••••••••",
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscureConfirmPassword,
@@ -189,17 +192,17 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please re-enter your password';
+                          return l10n?.passwordsDoNotMatch ?? 'Please re-enter your password';
                         }
                         if (value != _passwordController.text) {
-                          return 'Passwords do not match';
+                          return l10n?.passwordsDoNotMatch ?? 'Passwords do not match';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 32),
                     AuthButton(
-                      text: "Confirm",
+                      text: l10n?.confirm ?? "Confirm",
                       onTap: _confirm,
                       isLoading: _isLoading,
                     ),

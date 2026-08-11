@@ -3,6 +3,7 @@ import 'package:digital_khata/features/onboarding/widgets/onboarding_page_templa
 import 'package:digital_khata/features/onboarding/widgets/onboarding_animation.dart';
 import 'package:digital_khata/features/onboarding/widgets/bmi_zone_explorer.dart';
 import 'package:digital_khata/features/onboarding/widgets/onboarding_unit_selection.dart';
+import 'package:digital_khata/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -33,7 +35,7 @@ class OnboardingScreen extends StatelessWidget {
                         TextButton(
                           onPressed: () => provider.completeOnboarding(context),
                           child: Text(
-                            "Skip",
+                            l10n?.skip ?? "Skip",
                             style: TextStyle(
                               color: isDark ? Colors.white60 : Colors.black54,
                               fontWeight: FontWeight.w600,
@@ -53,26 +55,26 @@ class OnboardingScreen extends StatelessWidget {
                     onPageChanged: (index) {
                       provider.setCurrentPage(index);
                     },
-                    children: const [
+                    children: [
                       OnboardingPageTemplate(
-                        title: "Welcome to BMI Tracker",
-                        description: "Monitor your body mass index, analyze trends chronologically, and take control of your health journey.",
-                        child: OnboardingAnimation(assetPath: "assets/OB1 - Graph Lottie Animation.json"),
+                        title: l10n?.onboardingTitle1 ?? "Welcome to Kinetik",
+                        description: l10n?.onboardingDesc1 ?? "Monitor your body mass index, analyze trends chronologically, and take control of your health journey.",
+                        child: const OnboardingAnimation(assetPath: "assets/OB1 - Graph Lottie Animation.json"),
                       ),
                       OnboardingPageTemplate(
-                        title: "Explore BMI Classifications",
-                        description: "Learn how weight classes correspond to health metrics and understand your target ranges.",
-                        child: BmiZoneExplorer(),
+                        title: l10n?.onboardingTitle2 ?? "Explore BMI Classifications",
+                        description: l10n?.onboardingDesc2 ?? "Learn how weight classes correspond to health metrics and understand your target ranges.",
+                        child: const BmiZoneExplorer(),
                       ),
                       OnboardingPageTemplate(
-                        title: "Select Measurement Units",
-                        description: "Choose your preferred unit standard. This setting automatically configures all future inputs.",
-                        child: OnboardingUnitSelection(),
+                        title: l10n?.onboardingTitle3 ?? "Select Measurement Units",
+                        description: l10n?.onboardingDesc3 ?? "Choose your preferred unit standard. This setting automatically configures all future inputs.",
+                        child: const OnboardingUnitSelection(),
                       ),
                       OnboardingPageTemplate(
-                        title: "Safe Cloud Synchronization",
-                        description: "Access and sync logs securely across all your devices, with local offline fallback options.",
-                        child: OnboardingAnimation(assetPath: "assets/OB4 - data cloud upload backup.json"),
+                        title: l10n?.onboardingTitle4 ?? "Safe Cloud Synchronization",
+                        description: l10n?.onboardingDesc4 ?? "Access and sync logs securely across all your devices, with local offline fallback options.",
+                        child: const OnboardingAnimation(assetPath: "assets/OB4 - data cloud upload backup.json"),
                       ),
                     ],
                   ),
@@ -111,7 +113,7 @@ class OnboardingScreen extends StatelessWidget {
                           elevation: 0,
                         ),
                         child: Text(
-                          currentPage == 3 ? "Get Started" : "Next",
+                          currentPage == 3 ? (l10n?.getStarted ?? "Get Started") : (l10n?.next ?? "Next"),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
